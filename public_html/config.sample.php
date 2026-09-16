@@ -12,7 +12,7 @@ define('FORCE_HTTPS', filter_var(getenv('FORCE_HTTPS') ?: 'false', FILTER_VALIDA
 
 define('SMTP_HOST', getenv('SMTP_HOST') ?: 'smtp.example.com');
 define('SMTP_PORT', (int) (getenv('SMTP_PORT') ?: 587));
-define('SMTP_SECURE', getenv('SMTP_SECURE') ?: 'tls');
+define('SMTP_SECURE', getenv('SMTP_SECURE') !== false ? getenv('SMTP_SECURE') : 'tls');
 define('SMTP_USER', getenv('SMTP_USER') ?: 'noreply@example.com');
 define('SMTP_PASS', getenv('SMTP_PASS') ?: 'password');
 define('FROM_EMAIL', getenv('FROM_EMAIL') ?: 'noreply@example.com');
