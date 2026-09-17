@@ -13,6 +13,9 @@ const MOTHERBOARD_CUSTOMER_EMAIL_EVENTS = [
 /** Statuses that count as the first update. */
 const MOTHERBOARD_CUSTOMER_EMAIL_UPDATE_STATUSES = ['In Progress', 'Awaiting Parts'];
 
+/** Longest message a shop can save for one event. */
+const MOTHERBOARD_CUSTOMER_EMAIL_TEMPLATE_MAX = 4000;
+
 function motherboard_customer_email_path(): string {
     return MODULES_PATH . '/customer-email';
 }
@@ -33,6 +36,54 @@ function motherboard_customer_email_enabled(string $event, ?Settings $settings =
     }
     $settings = $settings ?: new Settings();
     return $settings->getSetting(MOTHERBOARD_CUSTOMER_EMAIL_EVENTS[$event], '0') === '1';
+}
+
+/** Setting that holds the shop's own message for one event; empty means the shipped one. */
+function motherboard_customer_email_template_key(string $event): string {
+    return 'customer_email_template_' . $event;
+}
+
+/** The message shipped with the active language, placeholders still in place. */
+function motherboard_customer_email_default_template(string $event): string {
+    return t('customer_email.' . $event . '.body');
+}
+
+/** The message an event sends: the shop's own wording, or the shipped one. */
+function motherboard_customer_email_template(string $event, ?Settings $settings = null): string {
+    if (!motherboard_customer_email_is_event($event)) {
+        return '';
+    }
+    $settings = $settings ?: new Settings();
+    $custom = trim((string) $settings->getSetting(motherboard_customer_email_template_key($event), ''));
+    return $custom !== '' ? $custom : motherboard_customer_email_default_template($event);
+}
+
+/** Puts a submitted message into the one shape that gets stored and compared. */
+function motherboard_customer_email_clean_template(string $template): string {
+    $template = str_replace(["\r\n", "\r"], "\n", $template);
+    $template = (string) preg_replace('/\n{3,}/', "\n\n", $template);
+    $template = (string) preg_replace('/[ \t]+\n/', "\n", $template);
+    return mb_substr(trim($template), 0, MOTHERBOARD_CUSTOMER_EMAIL_TEMPLATE_MAX);
+}
+
+/**
+ * Fills in a message's placeholders and splits it into paragraphs on blank lines. Single
+ * newlines stay inside their paragraph for the view to break.
+ */
+function motherboard_customer_email_paragraphs(string $template, array $vars): array {
+    foreach ($vars as $key => $value) {
+        $template = str_replace('{' . $key . '}', (string) $value, $template);
+    }
+
+    $paragraphs = [];
+    $clean = motherboard_customer_email_clean_template($template);
+    foreach (preg_split('/\n\s*\n/', $clean) ?: [] as $paragraph) {
+        $paragraph = trim($paragraph);
+        if ($paragraph !== '') {
+            $paragraphs[] = $paragraph;
+        }
+    }
+    return $paragraphs;
 }
 
 /**
@@ -94,7 +145,7 @@ function motherboard_customer_email_render(string $event, array $data, ?Settings
         'contact' => $contact,
         'heading' => t('customer_email.' . $event . '.heading', $vars),
         'greeting' => t('customer_email.greeting', $vars),
-        'body' => t('customer_email.' . $event . '.body', $vars),
+        'body' => motherboard_customer_email_paragraphs(motherboard_customer_email_template($event, $settings), $vars),
         'details' => $details,
         'questions' => t('customer_email.questions', $vars),
         'sign_off' => t('customer_email.sign_off'),
@@ -106,7 +157,11 @@ function motherboard_customer_email_render(string $event, array $data, ?Settings
     include motherboard_customer_email_path() . '/views/email.php';
     $html = (string) ob_get_clean();
 
-    $text = [$email['heading'], '', $email['greeting'], '', $email['body'], ''];
+    $text = [$email['heading'], '', $email['greeting'], ''];
+    foreach ($email['body'] as $paragraph) {
+        $text[] = $paragraph;
+        $text[] = '';
+    }
     foreach ($details as [$label, $value]) {
         $text[] = $label . ': ' . $value;
     }

@@ -1,6 +1,7 @@
 <?php
-// Customer email template. Table layout and inline styles only, since most mail clients
-// ignore <style> blocks and flexbox. Receives $email from motherboard_customer_email_render().
+// Customer email shell. Table layout and inline styles only, since most mail clients
+// ignore <style> blocks and flexbox. Receives $email from motherboard_customer_email_render(),
+// whose 'body' is the shop's message already split into paragraphs.
 $e = static fn($value): string => htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
 ?>
 <!DOCTYPE html>
@@ -24,7 +25,10 @@ $e = static fn($value): string => htmlspecialchars((string) $value, ENT_QUOTES, 
                     <td style="padding:32px;">
                         <h1 style="margin:0 0 24px; font-size:22px; line-height:1.3; font-weight:700; color:#111827;"><?= $e($email['heading']) ?></h1>
                         <p style="margin:0 0 16px; font-size:15px; line-height:1.6; color:#374151;"><?= $e($email['greeting']) ?></p>
-                        <p style="margin:0 0 24px; font-size:15px; line-height:1.6; color:#374151;"><?= $e($email['body']) ?></p>
+                        <?php $lastBody = count($email['body']) - 1; ?>
+                        <?php foreach ($email['body'] as $i => $paragraph): ?>
+                        <p style="margin:0 0 <?= $i === $lastBody ? '24' : '16' ?>px; font-size:15px; line-height:1.6; color:#374151;"><?= nl2br($e($paragraph)) ?></p>
+                        <?php endforeach; ?>
 
                         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 24px; background-color:#f9fafb; border:1px solid #e5e7eb; border-radius:6px;">
                             <?php foreach ($email['details'] as $i => [$label, $value]): ?>

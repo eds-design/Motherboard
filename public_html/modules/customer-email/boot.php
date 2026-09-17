@@ -43,8 +43,21 @@ Hooks::addAction('work_order.status.changed', function (int $workOrderId, string
 });
 
 Hooks::addFilter('module.settings.save.customer-email', function (array $result, array $post, Settings $settings): array {
-    foreach (MOTHERBOARD_CUSTOMER_EMAIL_EVENTS as $key) {
+    foreach (MOTHERBOARD_CUSTOMER_EMAIL_EVENTS as $event => $key) {
         $settings->setSetting($key, isset($post[$key]) ? '1' : '0');
+
+        $templateKey = motherboard_customer_email_template_key($event);
+        if (!array_key_exists($templateKey, $post)) {
+            continue;
+        }
+
+        // Wording that still matches the shipped message is stored as empty, so an untouched
+        // email keeps following the language the shop is reading it in.
+        $template = motherboard_customer_email_clean_template((string) $post[$templateKey]);
+        if ($template === motherboard_customer_email_clean_template(motherboard_customer_email_default_template($event))) {
+            $template = '';
+        }
+        $settings->setSetting($templateKey, $template);
     }
     return $result;
 });
