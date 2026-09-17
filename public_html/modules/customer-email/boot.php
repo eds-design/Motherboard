@@ -6,6 +6,7 @@ require_once ROOT_PATH . '/models/WorkOrder.php';
 
 motherboard_customer_email_load_models();
 
+$customerEmailPath = $definition['path'];
 $customerEmailController = $definition['path'] . '/controllers/CustomerEmailController.php';
 
 Hooks::addAction('app.ready', function ($router, Database $database) {
@@ -14,6 +15,19 @@ Hooks::addAction('app.ready', function ($router, Database $database) {
 
 Hooks::addAction('router.register', function (Router $router) use ($customerEmailController): void {
     $router->addRoute('/module-manager/customer-email/preview', 'CustomerEmailController', 'preview', $customerEmailController);
+    $router->addRoute('/work-orders/view/{id}/customer-email', 'CustomerEmailController', 'toggle', $customerEmailController);
+});
+
+Hooks::addAction('work_order.view.after_customer_info', function (array $workOrder, array $context) use ($customerEmailPath): void {
+    $workOrderId = (int) ($workOrder['id'] ?? 0);
+    if ($workOrderId <= 0) {
+        return;
+    }
+    $hasAddress = filter_var(trim((string) ($workOrder['customer_email'] ?? '')), FILTER_VALIDATE_EMAIL) !== false;
+    $disabled = (new CustomerEmailOptOut())->isDisabled($workOrderId);
+    $canEdit = !empty($context['canEdit']);
+    $csrf_token = $context['csrf_token'] ?? '';
+    include $customerEmailPath . '/views/work-order-section.php';
 });
 
 // Runs after other create.after handlers so the email reflects anything they persisted.

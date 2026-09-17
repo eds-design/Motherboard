@@ -20,6 +20,7 @@ function motherboard_customer_email_path(): string {
 function motherboard_customer_email_load_models(): void {
     require_once ROOT_PATH . '/core/Model.php';
     require_once motherboard_customer_email_path() . '/models/CustomerEmailEvent.php';
+    require_once motherboard_customer_email_path() . '/models/CustomerEmailOptOut.php';
 }
 
 function motherboard_customer_email_is_event(string $event): bool {
@@ -182,6 +183,10 @@ function motherboard_customer_email_notify(int $workOrderId, string $event): voi
 
         $settings = new Settings();
         if (!motherboard_customer_email_enabled($event, $settings)) {
+            return;
+        }
+
+        if ((new CustomerEmailOptOut())->isDisabled($workOrderId)) {
             return;
         }
 
