@@ -43,6 +43,32 @@ class EmailSender {
         $this->mailer->setFrom(FROM_EMAIL, $this->companyName);
     }
     
+    /**
+     * Sends an arbitrary HTML email. $textBody is the plain-text alternative; $replyTo lets
+     * a recipient's reply reach a real inbox instead of FROM_EMAIL.
+     */
+    public function send($email, $subject, $htmlBody, $textBody = '', $replyTo = '') {
+        try {
+            $this->mailer->clearAddresses();
+            $this->mailer->clearReplyTos();
+            $this->mailer->addAddress($email);
+            if ($replyTo !== '') {
+                $this->mailer->addReplyTo($replyTo, $this->companyName);
+            }
+
+            $this->mailer->CharSet = 'UTF-8';
+            $this->mailer->Subject = $subject;
+            $this->mailer->isHTML(true);
+            $this->mailer->Body = $htmlBody;
+            $this->mailer->AltBody = $textBody;
+
+            return $this->mailer->send();
+        } catch (Exception $e) {
+            error_log("Failed to send email: " . $e->getMessage());
+            return false;
+        }
+    }
+
     public function send2FACode($email, $code, $username) {
         try {
             $this->mailer->clearAddresses();

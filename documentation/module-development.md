@@ -232,6 +232,15 @@ Output HTML with `echo` or `include`.
 
 **Arguments:** `int $id`, `array $updateData`
 
+### `work_order.status.changed` (action)
+
+**When:** Any time a work order's status is saved with a different value: the details form and
+the quick status API both go through `WorkOrder::updateWorkOrder()`, which fires this after the
+row is updated and the change is logged.
+
+**Arguments:** `int $id`, `string $oldStatus`, `string $newStatus`  
+Both statuses are the English enum values (`Open`, `In Progress`, `Awaiting Parts`, `Closed`, `Picked Up`).
+
 ### `work_order.delete.before` (action)
 
 **Arguments:** `int $id`, `array $workOrder`

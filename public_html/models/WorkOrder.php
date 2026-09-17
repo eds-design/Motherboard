@@ -138,6 +138,12 @@ class WorkOrder extends Model {
                     $this->logWorkOrderChange($id, $field, $oldValue, $newValue);
                 }
             }
+
+            // Fired here rather than in a controller so every path that changes status
+            // (the details form and the quick status API) reaches it.
+            if ($oldData && array_key_exists('status', $data) && (string) $oldData['status'] !== (string) $data['status']) {
+                Hooks::doAction('work_order.status.changed', (int) $id, (string) $oldData['status'], (string) $data['status']);
+            }
         }
         
         return $result;
