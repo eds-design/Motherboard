@@ -108,6 +108,16 @@ backups, firewall rules, HTTPS and reverse proxies, and troubleshooting.
 
 Drop each module in `public_html/modules/<slug>/` with an `index.php`. See `documentation/module-development.md`.
 
+## Frontend CSS
+
+Tailwind is compiled into `public_html/assets/app.css` and served locally; production pages do not run the Tailwind CDN script.
+After changing PHP templates or CSS utilities, rebuild the committed stylesheet:
+
+```bash
+npm install
+npm run build:css
+```
+
 ## Languages
 
 Self-contained PHP arrays in `public_html/lang/`:

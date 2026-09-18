@@ -160,7 +160,10 @@ class InventoryWorkOrderProduct extends Model {
         if (!$lines) {
             return;
         }
-        $this->db->beginTransaction();
+        $ownsTransaction = !$this->db->inTransaction();
+        if ($ownsTransaction) {
+            $this->db->beginTransaction();
+        }
         try {
             foreach ($lines as $line) {
                 if (empty($line['product_id'])) {
@@ -173,9 +176,13 @@ class InventoryWorkOrderProduct extends Model {
                 $qty = (int) $line['quantity'];
                 $productModel->adjustStockAndSold((int) $line['product_id'], $this->stockDeltaForReturn($product, $qty), -$qty);
             }
-            $this->db->commit();
+            if ($ownsTransaction) {
+                $this->db->commit();
+            }
         } catch (Exception $e) {
-            $this->db->rollback();
+            if ($ownsTransaction && $this->db->inTransaction()) {
+                $this->db->rollback();
+            }
             throw $e;
         }
     }

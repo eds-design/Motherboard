@@ -95,16 +95,33 @@ if ($basePath) {
 }
 $currentPath = '/' . ltrim($currentPath, '/');
 
-$installed = $database->isInstalled();
+$installationState = $database->installationState();
+$installed = $installationState === 'installed';
 
-if (!$installed && $currentPath !== '/install') {
+if (in_array($installationState, ['incomplete', 'unavailable'], true) && $currentPath !== '/install') {
+    http_response_code($installationState === 'unavailable' ? 503 : 409);
+    $databaseUnavailable = $installationState === 'unavailable';
+    require ROOT_PATH . '/views/install/incomplete.php';
+    exit;
+}
+
+if ($installationState === 'empty' && $currentPath !== '/install') {
     header('Location: ' . BASE_URL . '/install');
     exit;
 }
 
 if ($installed) {
-    Schema::ensure($database);
-    $settingsModel = new Settings();
+    $settingsModel = new Settings($database);
+}
+
+$moduleLoader = new ModuleLoader($version);
+Hooks::doAction('app.boot', $router, $database);
+$moduleLoader->loadAll($installed ? $settingsModel : null);
+
+if ($installed) {
+    require_once 'core/MigrationManager.php';
+    MigrationManager::handleIfNeeded($database);
+
     if (isset($_SESSION['user_id'])) {
         $timeoutMinutes = (int) $settingsModel->getSetting('session_timeout', max(5, (int) (SESSION_TIMEOUT / 60)));
         $timeoutSeconds = max(5, min(1440, $timeoutMinutes)) * 60;
@@ -131,9 +148,6 @@ if ($installed) {
     }
 }
 
-$moduleLoader = new ModuleLoader($version);
-Hooks::doAction('app.boot', $router, $database);
-$moduleLoader->loadAll($installed ? $settingsModel : null);
 Hooks::doAction('app.ready', $router, $database, $moduleLoader);
 
 require_once ROOT_PATH . '/models/WorkOrderAttachment.php';

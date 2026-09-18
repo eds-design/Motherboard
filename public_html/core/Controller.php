@@ -12,7 +12,7 @@ class Controller {
         
         // Load settings model for global access
         require_once 'models/Settings.php';
-        $this->settingsModel = new Settings();
+        $this->settingsModel = new Settings($this->db);
     }
     
     /**

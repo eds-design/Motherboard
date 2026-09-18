@@ -5,12 +5,26 @@ require_once ROOT_PATH . '/models/Settings.php';
 require_once ROOT_PATH . '/models/WorkOrder.php';
 
 motherboard_customer_email_load_models();
+const MOTHERBOARD_CUSTOMER_EMAIL_SCHEMA_VERSION = 1;
 
 $customerEmailPath = $definition['path'];
 $customerEmailController = $definition['path'] . '/controllers/CustomerEmailController.php';
 
-Hooks::addAction('app.ready', function ($router, Database $database) {
+Hooks::addFilter('schema.needs_migration', function (bool $needs, Database $database): bool {
+    if ($needs) {
+        return true;
+    }
+    $settings = new Settings($database);
+    return (int) $settings->getSetting('schema_version_customer_email', '0') < MOTHERBOARD_CUSTOMER_EMAIL_SCHEMA_VERSION;
+});
+
+Hooks::addAction('schema.migrate', function (Database $database): void {
+    $settings = new Settings($database);
+    if ((int) $settings->getSetting('schema_version_customer_email', '0') >= MOTHERBOARD_CUSTOMER_EMAIL_SCHEMA_VERSION) {
+        return;
+    }
     motherboard_customer_email_ensure_schema($database);
+    $settings->setSetting('schema_version_customer_email', (string) MOTHERBOARD_CUSTOMER_EMAIL_SCHEMA_VERSION);
 });
 
 Hooks::addAction('router.register', function (Router $router) use ($customerEmailController): void {

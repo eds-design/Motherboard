@@ -5,12 +5,26 @@ require_once ROOT_PATH . '/models/Settings.php';
 require_once ROOT_PATH . '/models/WorkOrder.php';
 
 motherboard_warranty_load_models();
+const MOTHERBOARD_WARRANTY_SCHEMA_VERSION = 1;
 
 $warrantyPath = $definition['path'];
 $warrantyController = $definition['path'] . '/controllers/WarrantyController.php';
 
-Hooks::addAction('app.ready', function ($router, Database $database) {
+Hooks::addFilter('schema.needs_migration', function (bool $needs, Database $database): bool {
+    if ($needs) {
+        return true;
+    }
+    $settings = new Settings($database);
+    return (int) $settings->getSetting('schema_version_warranty', '0') < MOTHERBOARD_WARRANTY_SCHEMA_VERSION;
+});
+
+Hooks::addAction('schema.migrate', function (Database $database): void {
+    $settings = new Settings($database);
+    if ((int) $settings->getSetting('schema_version_warranty', '0') >= MOTHERBOARD_WARRANTY_SCHEMA_VERSION) {
+        return;
+    }
     motherboard_warranty_ensure_schema($database);
+    $settings->setSetting('schema_version_warranty', (string) MOTHERBOARD_WARRANTY_SCHEMA_VERSION);
 });
 
 Hooks::addAction('router.register', function (Router $router) use ($warrantyController): void {
@@ -47,7 +61,7 @@ Hooks::addAction('work_order.create.step', function (int $step, array $post): vo
     ];
 });
 
-Hooks::addAction('work_order.create.after', function ($workOrderId, array $workOrderData): void {
+Hooks::addAction('work_order.create.transaction', function ($workOrderId, array $workOrderData): void {
     $pending = motherboard_warranty_pending();
     unset($_SESSION['warranty_create']);
     if (!$pending['is_warranty']) {

@@ -12,7 +12,7 @@
     ?>
     <meta name="csrf-token" content="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
     <title><?= htmlspecialchars($title ?? ($companyName ?? APP_NAME), ENT_QUOTES, 'UTF-8') ?></title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="<?= htmlspecialchars(BASE_URL) ?>/assets/app.css">
     <script>
         /**
          * Phone Number Validation and Formatting
@@ -296,25 +296,6 @@
             return allValid;
         }
     </script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: {
-                            50: '#eff6ff',
-                            500: '#3b82f6',
-                            600: '#2563eb',
-                            700: '#1d4ed8'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        [x-cloak] { display: none !important; }
-    </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
     <?php

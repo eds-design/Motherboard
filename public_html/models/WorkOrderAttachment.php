@@ -343,13 +343,14 @@ class WorkOrderAttachment extends Model {
         }
     }
 
-    public function finalizePending(int $workOrderId, array $pendingList, $userId = null): void {
+    public function finalizePending(int $workOrderId, array $pendingList, $userId = null): array {
         if (empty($pendingList)) {
-            return;
+            return [];
         }
 
         $this->ensureStorage();
         $destination = $this->currentDestination();
+        $finalized = [];
         if ($destination === 'local') {
             $targetDir = self::storagePath() . '/' . $workOrderId;
             if (!is_dir($targetDir) && !mkdir($targetDir, 0755, true) && !is_dir($targetDir)) {
@@ -357,40 +358,55 @@ class WorkOrderAttachment extends Model {
             }
         }
 
-        foreach ($pendingList as $item) {
-            $relative = ltrim($item['stored_path'] ?? '', '/');
-            $source = self::storagePath() . '/' . $relative;
-            if (!is_file($source)) {
-                continue;
+        try {
+            foreach ($pendingList as $item) {
+                $relative = ltrim($item['stored_path'] ?? '', '/');
+                $source = self::storagePath() . '/' . $relative;
+                if (!is_file($source)) {
+                    throw new Exception(t('wo.attachment_upload_fail'));
+                }
+
+                $stored = $item['stored_filename'] ?? basename($source);
+                $destRelative = $workOrderId . '/' . $stored;
+                $mime = $item['mime_type'] ?? $this->detectMime($source);
+                $size = $item['file_size'] ?? (filesize($source) ?: 0);
+                $record = [
+                    'work_order_id' => $workOrderId,
+                    'original_filename' => $item['original_filename'] ?? $stored,
+                    'stored_path' => $destRelative,
+                    'storage_destination' => $destination,
+                    'description' => $item['description'] ?? '',
+                    'mime_type' => $mime,
+                    'file_size' => $size,
+                    'uploaded_by' => $userId,
+                    'created_at' => date('Y-m-d H:i:s'),
+                ];
+
+                $this->persistFile($destination, $destRelative, $source, [
+                    'mime_type' => $mime,
+                    'original_filename' => $record['original_filename'],
+                    'file_size' => $size,
+                ]);
+                $finalized[] = $record;
+                $this->create($record);
             }
-
-            $stored = $item['stored_filename'] ?? basename($source);
-            $destRelative = $workOrderId . '/' . $stored;
-            $mime = $item['mime_type'] ?? $this->detectMime($source);
-            $size = $item['file_size'] ?? (filesize($source) ?: 0);
-
-            $this->persistFile($destination, $destRelative, $source, [
-                'mime_type' => $mime,
-                'original_filename' => $item['original_filename'] ?? $stored,
-                'file_size' => $size,
-            ]);
-
-            $this->create([
-                'work_order_id' => $workOrderId,
-                'original_filename' => $item['original_filename'] ?? $stored,
-                'stored_path' => $destRelative,
-                'storage_destination' => $destination,
-                'description' => $item['description'] ?? '',
-                'mime_type' => $mime,
-                'file_size' => $size,
-                'uploaded_by' => $userId,
-                'created_at' => date('Y-m-d H:i:s'),
-            ]);
+        } catch (Throwable $e) {
+            $this->cleanupFinalized($finalized);
+            throw $e;
         }
 
         $pendingDir = self::storagePath() . '/pending/' . $this->sessionStorageKey();
         if (is_dir($pendingDir)) {
             @rmdir($pendingDir);
+        }
+        return $finalized;
+    }
+
+    public function cleanupFinalized(array $attachments): void {
+        foreach ($attachments as $attachment) {
+            if (is_array($attachment)) {
+                $this->deleteStoredAttachment($attachment);
+            }
         }
     }
 

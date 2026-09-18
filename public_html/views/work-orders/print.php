@@ -8,7 +8,7 @@ $hideNavigation = true;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($title, ENT_QUOTES, 'UTF-8') ?></title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="<?= htmlspecialchars(BASE_URL) ?>/assets/app.css">
     <style>
         @media print {
             body { margin: 0; padding: 10px; font-size: 11pt; line-height: 1.3; }

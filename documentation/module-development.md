@@ -213,7 +213,19 @@ Output HTML with `echo` or `include`.
 
 **Arguments:** `array $workOrderData`
 
+### `work_order.create.transaction` (action)
+
+**When:** After the work order row is inserted, while the core creation transaction is
+still open. Use only for required database writes that must roll back with the work order.
+Do not make network calls or start another transaction.
+
+**Arguments:** `int $workOrderId`, `array $workOrderData`
+
 ### `work_order.create.after` (action)
+
+**When:** After the work order, customer, log, and attachment transaction commits. Use for
+notifications and other post-commit side effects. Exceptions are logged and do not remove
+the completed work order.
 
 **Arguments:** `int $workOrderId`, `array $workOrderData`
 
@@ -244,6 +256,14 @@ Both statuses are the English enum values (`Open`, `In Progress`, `Awaiting Part
 ### `work_order.delete.before` (action)
 
 **Arguments:** `int $id`, `array $workOrder`
+
+### `work_order.delete.transaction` (action)
+
+**When:** Inside the same database transaction that deletes the work order. Use this for
+required database updates, such as restoring inventory, that must roll back if deletion
+fails. Reuse the supplied `Database` object and do not start another transaction.
+
+**Arguments:** `int $id`, `Database $database`
 
 ### `work_order.delete.after` (action)
 

@@ -3,8 +3,8 @@ class Model {
     protected $db;
     protected $table;
     
-    public function __construct() {
-        $this->db = new Database();
+    public function __construct(?Database $database = null) {
+        $this->db = $database ?: new Database();
     }
     
     protected function findById($id) {

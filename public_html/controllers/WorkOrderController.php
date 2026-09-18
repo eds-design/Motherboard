@@ -16,10 +16,10 @@ class WorkOrderController extends Controller {
     
     public function __construct() {
         parent::__construct();
-        $this->workOrderModel = new WorkOrder();
-        $this->attachmentModel = new WorkOrderAttachment();
-        $this->customerModel = new Customer();
-        $this->userModel = new User();
+        $this->workOrderModel = new WorkOrder($this->db);
+        $this->attachmentModel = new WorkOrderAttachment($this->db);
+        $this->customerModel = new Customer($this->db);
+        $this->userModel = new User($this->db);
     }
     
     public function index() {
@@ -77,7 +77,6 @@ class WorkOrderController extends Controller {
                     $customerId = $_POST['customer_id'] ?? null;
                     
                     if (!$customerId) {
-                        // Create new customer
                         $customerData = [
                             'name' => $this->sanitizeInput($_POST['customer_name']),
                             'company' => $this->sanitizeInput($_POST['customer_company']),
@@ -88,12 +87,20 @@ class WorkOrderController extends Controller {
                         if (empty($customerData['name']) || empty($customerData['phone'])) {
                             throw new Exception(t('wo.customer_required'));
                         }
-                        
-                        $customerId = $this->customerModel->createCustomer($customerData);
-                        Hooks::doAction('customer.create.after', $customerId, $customerData);
+                        if ($customerData['email'] !== '' && !filter_var($customerData['email'], FILTER_VALIDATE_EMAIL)) {
+                            throw new Exception(t('customers.invalid_email'));
+                        }
+
+                        $_SESSION['new_customer_data'] = $customerData;
+                        unset($_SESSION['work_order_data']['customer_id']);
+                    } else {
+                        $customer = $this->customerModel->findById((int) $customerId);
+                        if (!$customer) {
+                            throw new Exception(t('customers.not_found'));
+                        }
+                        $_SESSION['work_order_data']['customer_id'] = (int) $customerId;
+                        unset($_SESSION['new_customer_data']);
                     }
-                    
-                    $_SESSION['work_order_data']['customer_id'] = $customerId;
                     $this->redirect('/work-orders/create?step=2');
                     
                 } elseif ($step === 2) {
@@ -146,8 +153,7 @@ class WorkOrderController extends Controller {
                     }
 
                 } elseif ($step === 5) {
-                    // Confirm and create
-                    $workOrderData = $_SESSION['work_order_data'];
+                    $workOrderData = $_SESSION['work_order_data'] ?? [];
                     $pendingAttachments = $workOrderData['pending_attachments'] ?? [];
                     unset($workOrderData['pending_attachments']);
                     $workOrderData['assigned_to'] = $_POST['assigned_to'] ?: null;
@@ -156,21 +162,54 @@ class WorkOrderController extends Controller {
                         throw new Exception('Invalid priority');
                     }
                     $workOrderData['created_by'] = $_SESSION['user_id'];
-                    
-                    $workOrderData = Hooks::applyFilters('work_order.create.data', $workOrderData);
-                    Hooks::doAction('work_order.create.before', $workOrderData);
-                    $workOrderId = $this->workOrderModel->createWorkOrder($workOrderData);
-                    Hooks::doAction('work_order.create.after', $workOrderId, $workOrderData);
+                    $newCustomerData = $_SESSION['new_customer_data'] ?? null;
+                    $createdCustomerId = null;
+                    $finalizedAttachments = [];
+                    try {
+                        $this->db->beginTransaction();
+                        if (is_array($newCustomerData)) {
+                            $createdCustomerId = $this->customerModel->createCustomer($newCustomerData);
+                            $workOrderData['customer_id'] = $createdCustomerId;
+                        }
+                        if (empty($workOrderData['customer_id'])) {
+                            throw new Exception(t('wo.customer_required'));
+                        }
+
+                        $workOrderData = Hooks::applyFilters('work_order.create.data', $workOrderData);
+                        Hooks::doAction('work_order.create.before', $workOrderData);
+                        $workOrderId = $this->workOrderModel->createWorkOrder($workOrderData);
+                        Hooks::doAction('work_order.create.transaction', $workOrderId, $workOrderData);
+                        $finalizedAttachments = $this->attachmentModel->finalizePending(
+                            $workOrderId,
+                            $pendingAttachments,
+                            $_SESSION['user_id']
+                        );
+                        $this->db->commit();
+                    } catch (Throwable $e) {
+                        if ($this->db->inTransaction()) {
+                            $this->db->rollback();
+                        }
+                        $this->attachmentModel->cleanupFinalized($finalizedAttachments);
+                        foreach ($pendingAttachments as $pendingAttachment) {
+                            $this->attachmentModel->removePendingUpload($pendingAttachment);
+                        }
+                        $_SESSION['work_order_data']['pending_attachments'] = [];
+                        $step = 4;
+                        throw new Exception(t('wo.create_rolled_back') . ' ' . $e->getMessage(), 0, $e);
+                    }
+
+                    unset($_SESSION['work_order_data']);
+                    unset($_SESSION['new_customer_data']);
 
                     try {
-                        $this->attachmentModel->finalizePending($workOrderId, $pendingAttachments, $_SESSION['user_id']);
-                    } catch (Exception $e) {
-                        error_log('Failed to save work order attachments: ' . $e->getMessage());
+                        if ($createdCustomerId !== null) {
+                            Hooks::doAction('customer.create.after', $createdCustomerId, $newCustomerData);
+                        }
+                        Hooks::doAction('work_order.create.after', $workOrderId, $workOrderData);
+                    } catch (Throwable $e) {
+                        error_log('Post-creation module hook failed for work order #' . $workOrderId . ': ' . $e->getMessage());
                     }
-                    
-                    // Clear session data
-                    unset($_SESSION['work_order_data']);
-                    
+
                     $this->logger->log('work_order_created', "Work order #{$workOrderId} created", $_SESSION['user_id']);
                     $this->redirect("/work-orders/submitted/{$workOrderId}");
                 }
@@ -187,6 +226,8 @@ class WorkOrderController extends Controller {
         
         if ($step >= 2 && isset($_SESSION['work_order_data']['customer_id'])) {
             $customer = $this->customerModel->findById($_SESSION['work_order_data']['customer_id']);
+        } elseif ($step >= 2 && isset($_SESSION['new_customer_data'])) {
+            $customer = $_SESSION['new_customer_data'];
         }
         
         $this->view('work-orders/create', [

@@ -4,12 +4,26 @@ require_once $definition['path'] . '/schema.php';
 require_once ROOT_PATH . '/models/Settings.php';
 
 motherboard_inventory_load_models();
+const MOTHERBOARD_INVENTORY_SCHEMA_VERSION = 1;
 
 $inventoryPath = $definition['path'];
 $inventoryController = $definition['path'] . '/controllers/InventoryController.php';
 
-Hooks::addAction('app.ready', function ($router, Database $database) {
+Hooks::addFilter('schema.needs_migration', function (bool $needs, Database $database): bool {
+    if ($needs) {
+        return true;
+    }
+    $settings = new Settings($database);
+    return (int) $settings->getSetting('schema_version_inventory', '0') < MOTHERBOARD_INVENTORY_SCHEMA_VERSION;
+});
+
+Hooks::addAction('schema.migrate', function (Database $database): void {
+    $settings = new Settings($database);
+    if ((int) $settings->getSetting('schema_version_inventory', '0') >= MOTHERBOARD_INVENTORY_SCHEMA_VERSION) {
+        return;
+    }
     motherboard_inventory_ensure_schema($database);
+    $settings->setSetting('schema_version_inventory', (string) MOTHERBOARD_INVENTORY_SCHEMA_VERSION);
 });
 
 Hooks::addAction('router.register', function (Router $router) use ($inventoryController): void {
@@ -56,9 +70,9 @@ Hooks::addAction('work_order.print.before_attachments', function (array $workOrd
     include $inventoryPath . '/views/work-order-print.php';
 });
 
-Hooks::addAction('work_order.delete.before', function (int $id) {
-    $lineModel = new InventoryWorkOrderProduct();
-    $productModel = new InventoryProduct();
+Hooks::addAction('work_order.delete.transaction', function (int $id, Database $database): void {
+    $lineModel = new InventoryWorkOrderProduct($database);
+    $productModel = new InventoryProduct($database);
     $lineModel->restoreStockForWorkOrder($id, $productModel);
 });
 

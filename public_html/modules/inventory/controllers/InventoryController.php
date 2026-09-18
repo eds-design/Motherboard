@@ -12,10 +12,10 @@ class InventoryController extends Controller {
 
     public function __construct() {
         parent::__construct();
-        $this->categoryModel = new InventoryCategory();
-        $this->productModel = new InventoryProduct();
-        $this->lineModel = new InventoryWorkOrderProduct();
-        $this->workOrderModel = new WorkOrder();
+        $this->categoryModel = new InventoryCategory($this->db);
+        $this->productModel = new InventoryProduct($this->db);
+        $this->lineModel = new InventoryWorkOrderProduct($this->db);
+        $this->workOrderModel = new WorkOrder($this->db);
     }
 
     public function index() {

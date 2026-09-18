@@ -104,19 +104,32 @@ class WorkOrder extends Model {
     }
     
     public function createWorkOrder($data) {
-        if (!empty($data['password'])) {
-            $data['password'] = Crypto::encrypt($data['password']);
+        $ownsTransaction = !$this->db->inTransaction();
+        if ($ownsTransaction) {
+            $this->db->beginTransaction();
         }
-        $data['work_order_number'] = $this->generateWorkOrderNumber();
-        $data['status'] = 'Open';
-        $data['created_at'] = date('Y-m-d H:i:s');
-        
-        $workOrderId = $this->create($data);
-        
-        // Log the creation
-        $this->logWorkOrderAction($workOrderId, 'created', 'Work order created');
-        
-        return $workOrderId;
+
+        try {
+            if (!empty($data['password'])) {
+                $data['password'] = Crypto::encrypt($data['password']);
+            }
+            $data['work_order_number'] = $this->allocateWorkOrderNumber();
+            $data['status'] = 'Open';
+            $data['created_at'] = date('Y-m-d H:i:s');
+
+            $workOrderId = $this->create($data);
+            $this->logWorkOrderAction($workOrderId, 'created', 'Work order created');
+
+            if ($ownsTransaction) {
+                $this->db->commit();
+            }
+            return $workOrderId;
+        } catch (Throwable $e) {
+            if ($ownsTransaction && $this->db->inTransaction()) {
+                $this->db->rollback();
+            }
+            throw $e;
+        }
     }
     
     public function updateWorkOrder($id, $data) {
@@ -227,28 +240,37 @@ class WorkOrder extends Model {
         return $this->count();
     }
     
-    private function generateWorkOrderNumber() {
+    private function allocateWorkOrderNumber(): string {
         $prefix = 'WO';
-        $year = date('Y');
-        
-        // Get the highest number for this year
-        $stmt = $this->db->prepare("
-            SELECT work_order_number 
-            FROM work_orders 
-            WHERE work_order_number LIKE ? 
-            ORDER BY work_order_number DESC 
-            LIMIT 1
-        ");
-        $stmt->execute(["$prefix$year%"]);
-        $lastNumber = $stmt->fetch();
-        
-        if ($lastNumber) {
-            $number = intval(substr($lastNumber['work_order_number'], -4)) + 1;
-        } else {
-            $number = 1;
+        $year = (int) date('Y');
+
+        $seed = $this->db->prepare(
+            'INSERT INTO work_order_counters (counter_year, next_number) VALUES (?, 0)
+             ON DUPLICATE KEY UPDATE next_number = next_number'
+        );
+        $seed->execute([$year]);
+
+        $counter = $this->db->prepare(
+            'SELECT next_number FROM work_order_counters WHERE counter_year = ? FOR UPDATE'
+        );
+        $counter->execute([$year]);
+        $number = (int) $counter->fetchColumn();
+
+        if ($number < 1) {
+            $existing = $this->db->prepare(
+                'SELECT MAX(CAST(SUBSTRING(work_order_number, 7) AS UNSIGNED))
+                 FROM work_orders WHERE work_order_number LIKE ?'
+            );
+            $existing->execute([$prefix . $year . '%']);
+            $number = max(1, (int) $existing->fetchColumn() + 1);
         }
-        
-        return $prefix . $year . str_pad($number, 4, '0', STR_PAD_LEFT);
+
+        $update = $this->db->prepare(
+            'UPDATE work_order_counters SET next_number = ? WHERE counter_year = ?'
+        );
+        $update->execute([$number + 1, $year]);
+
+        return $prefix . $year . str_pad((string) $number, 4, '0', STR_PAD_LEFT);
     }
     
     public function logWorkOrderAction($workOrderId, $action, $details) {
@@ -350,6 +372,7 @@ class WorkOrder extends Model {
 
         try {
             $this->db->beginTransaction();
+            Hooks::doAction('work_order.delete.transaction', (int) $id, $this->db);
             
             // Delete related logs first
             $stmt = $this->db->prepare("DELETE FROM work_order_logs WHERE work_order_id = ?");

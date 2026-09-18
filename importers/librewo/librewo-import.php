@@ -69,10 +69,13 @@ const TARGET_TABLES = [
 ];
 
 // Module tables, cleared when the module happens to be installed. Leaving them
-// alone is not an option: work_order_products rows hang off work orders that
-// are about to disappear, and foreign key checks are off during the import so
-// nothing would cascade them away.
+// alone is not an option: their rows hang off work orders that are about to
+// disappear, and foreign key checks are off during the import so nothing would
+// cascade them away.
 const OPTIONAL_TABLES = [
+    'customer_email_events',
+    'customer_email_optouts',
+    'work_order_warranty',
     'work_order_products',
     'inventory_products',
     'inventory_categories',

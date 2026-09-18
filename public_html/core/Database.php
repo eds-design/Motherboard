@@ -33,13 +33,42 @@ class Database {
     }
     
     public function isInstalled() {
+        return $this->installationState() === 'installed';
+    }
+
+    /**
+     * Installation is permitted only in a completely empty database. Once any table
+     * exists, an interrupted setup must be repaired or cleared deliberately rather
+     * than being silently overwritten by another installer run.
+     */
+    public function installationState(): string {
         try {
-            $pdo = $this->connect();
-            $stmt = $pdo->query("SHOW TABLES LIKE 'users'");
-            return $stmt->rowCount() > 0;
+            $tables = $this->tableNames();
         } catch (Exception $e) {
-            return false;
+            return 'unavailable';
         }
+
+        if ($tables === []) {
+            return 'empty';
+        }
+
+        $required = [
+            'users',
+            'customers',
+            'work_orders',
+            'work_order_logs',
+            'user_logins',
+            'login_attempts',
+            'activity_logs',
+            'settings',
+        ];
+
+        return array_diff($required, $tables) === [] ? 'installed' : 'incomplete';
+    }
+
+    public function tableNames(): array {
+        $stmt = $this->connect()->query('SHOW TABLES');
+        return array_values(array_map('strval', $stmt->fetchAll(PDO::FETCH_COLUMN)));
     }
     
     public function canConnect() {
@@ -73,5 +102,20 @@ class Database {
     
     public function rollback() {
         return $this->connect()->rollback();
+    }
+
+    public function inTransaction(): bool {
+        return $this->connect()->inTransaction();
+    }
+
+    public function acquireLock(string $name, int $timeoutSeconds = 0): bool {
+        $stmt = $this->prepare('SELECT GET_LOCK(?, ?)');
+        $stmt->execute([$name, max(0, $timeoutSeconds)]);
+        return (int) $stmt->fetchColumn() === 1;
+    }
+
+    public function releaseLock(string $name): void {
+        $stmt = $this->prepare('SELECT RELEASE_LOCK(?)');
+        $stmt->execute([$name]);
     }
 }

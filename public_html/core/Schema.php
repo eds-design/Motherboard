@@ -2,6 +2,26 @@
 require_once ROOT_PATH . '/core/Crypto.php';
 
 class Schema {
+    public const VERSION = 2;
+
+    public static function needsMigration(Database $database): bool {
+        $pdo = $database->connect();
+        if (!self::tableExists($pdo, 'settings')) {
+            return true;
+        }
+
+        foreach (['two_factor_codes', 'work_order_attachments', 'work_order_counters'] as $table) {
+            if (!self::tableExists($pdo, $table)) {
+                return true;
+            }
+        }
+
+        $stmt = $pdo->prepare("SELECT setting_value FROM settings WHERE setting_key = 'schema_version' LIMIT 1");
+        $stmt->execute();
+        $version = (int) ($stmt->fetchColumn() ?: 0);
+        return $version < self::VERSION;
+    }
+
     public static function ensure(Database $database): void {
         $pdo = $database->connect();
         $columns = self::tableColumns($pdo, 'work_orders');
@@ -20,7 +40,17 @@ class Schema {
         self::ensureUserPreferences($pdo);
         self::ensureSecurityStorage($pdo);
         self::ensureAttachmentsTable($pdo);
+        self::ensureWorkOrderCounters($pdo);
         self::ensureDefaultSettings($pdo);
+    }
+
+    public static function markCurrent(Database $database): void {
+        $stmt = $database->prepare(
+            "INSERT INTO settings (setting_key, setting_value, created_at, updated_at)
+             VALUES ('schema_version', ?, NOW(), NOW())
+             ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value), updated_at = NOW()"
+        );
+        $stmt->execute([(string) self::VERSION]);
     }
 
     private static function ensureUserPreferences(PDO $pdo): void {
@@ -36,7 +66,18 @@ class Schema {
             $pdo->exec('ALTER TABLE work_orders MODIFY COLUMN password TEXT NULL');
         }
 
-        if (self::tableExists($pdo, 'two_factor_codes')) {
+        if (!self::tableExists($pdo, 'two_factor_codes')) {
+            $pdo->exec("CREATE TABLE two_factor_codes (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                user_id INT NOT NULL,
+                code VARCHAR(255) NOT NULL,
+                attempts TINYINT UNSIGNED NOT NULL DEFAULT 0,
+                last_attempt_at DATETIME NULL,
+                expires_at DATETIME NOT NULL,
+                UNIQUE KEY unique_user (user_id),
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+        } else {
             $columns = self::tableColumns($pdo, 'two_factor_codes');
             $codeType = self::columnType($pdo, 'two_factor_codes', 'code');
             if ($codeType === null || !str_starts_with(strtolower($codeType), 'varchar(255)')) {
@@ -93,6 +134,15 @@ class Schema {
         $columns = self::tableColumns($pdo, 'work_order_attachments');
         if (!in_array('storage_destination', $columns, true)) {
             $pdo->exec("ALTER TABLE work_order_attachments ADD COLUMN storage_destination VARCHAR(64) NOT NULL DEFAULT 'local' AFTER stored_path");
+        }
+    }
+
+    private static function ensureWorkOrderCounters(PDO $pdo): void {
+        if (!self::tableExists($pdo, 'work_order_counters')) {
+            $pdo->exec("CREATE TABLE work_order_counters (
+                counter_year SMALLINT UNSIGNED PRIMARY KEY,
+                next_number INT UNSIGNED NOT NULL
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
         }
     }
 

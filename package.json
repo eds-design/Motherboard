@@ -1,0 +1,11 @@
+{
+  "name": "motherboard-assets",
+  "private": true,
+  "scripts": {
+    "build:css": "tailwindcss -i ./resources/css/app.css -o ./public_html/assets/app.css --minify",
+    "watch:css": "tailwindcss -i ./resources/css/app.css -o ./public_html/assets/app.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "3.4.17"
+  }
+}

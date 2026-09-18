@@ -1,20 +1,25 @@
 <?php
 require_once 'core/Controller.php';
-require_once 'models/User.php';
 
 class InstallController extends Controller {
-    private $userModel;
+    private const INSTALL_LOCK = 'motherboard_install';
     
     public function __construct() {
         parent::__construct();
-        $this->userModel = new User();
     }
     
     public function index() {
-        // Check if database is already installed
-        if ($this->db->isInstalled()) {
+        $installationState = $this->db->installationState();
+        if ($installationState === 'installed') {
             http_response_code(403);
             $this->view('errors/403');
+            return;
+        }
+        if ($installationState !== 'empty') {
+            http_response_code($installationState === 'unavailable' ? 503 : 409);
+            $this->view('install/incomplete', [
+                'databaseUnavailable' => $installationState === 'unavailable',
+            ]);
             return;
         }
         
@@ -39,8 +44,18 @@ class InstallController extends Controller {
         $success = false;
         
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $lockAcquired = false;
+            $installationStarted = false;
+            $installationComplete = false;
             try {
                 $this->validateCSRF();
+                $lockAcquired = $this->db->acquireLock(self::INSTALL_LOCK, 0);
+                if (!$lockAcquired) {
+                    throw new Exception(t('install.already_running'));
+                }
+                if ($this->db->installationState() !== 'empty') {
+                    throw new Exception(t('install.database_not_empty'));
+                }
                 
                 $username = $this->sanitizeInput($_POST['username']);
                 $email = $this->sanitizeInput($_POST['email']);
@@ -64,26 +79,24 @@ class InstallController extends Controller {
                     throw new Exception(t('auth.password_mismatch'));
                 }
                 
-                // Create database tables
+                $installationStarted = true;
                 $this->createTables();
-                
-                // Create admin user
-                $this->userModel->createUser([
-                    'username' => $username,
-                    'email' => $email,
-                    'password' => $password,
-                    'user_group' => 'Admin'
-                ]);
-                
-                // Create default settings
-                $this->createDefaultSettings();
+                $this->createAdminAndSettings($username, $email, $password);
+                $installationComplete = true;
                 
                 $success = true;
                 $this->logger->log('system_installed', 'System installed successfully', null, $this->getClientIP());
                 Hooks::doAction('install.complete');
                 
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
+                if ($installationStarted && !$installationComplete) {
+                    $this->removeInterruptedInstallation();
+                }
                 $error = $e->getMessage();
+            } finally {
+                if ($lockAcquired) {
+                    $this->db->releaseLock(self::INSTALL_LOCK);
+                }
             }
         }
         
@@ -232,6 +245,11 @@ class InstallController extends Controller {
                 created_at DATETIME NOT NULL,
                 FOREIGN KEY (work_order_id) REFERENCES work_orders(id) ON DELETE CASCADE,
                 FOREIGN KEY (uploaded_by) REFERENCES users(id) ON DELETE SET NULL
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
+
+            "CREATE TABLE IF NOT EXISTS work_order_counters (
+                counter_year SMALLINT UNSIGNED PRIMARY KEY,
+                next_number INT UNSIGNED NOT NULL
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
         ];
         
@@ -240,10 +258,8 @@ class InstallController extends Controller {
         }
     }
     
-    private function createDefaultSettings() {
-        require_once 'models/Settings.php';
-        $settings = new Settings();
-        
+    private function createAdminAndSettings(string $username, string $email, string $password): void {
+        $pdo = $this->db->connect();
         $defaultSettings = [
             'company_name' => APP_NAME,
             'company_address' => '',
@@ -266,11 +282,62 @@ class InstallController extends Controller {
             'require_2fa' => '0',
             'attachment_destination' => 'local',
             'attachment_max_size_mb' => '10',
-            'attachment_allowed_extensions' => 'png,jpg,pdf,md,txt'
+            'attachment_allowed_extensions' => 'png,jpg,pdf,md,txt',
+            'schema_version' => (string) Schema::VERSION,
         ];
-        
-        foreach ($defaultSettings as $key => $value) {
-            $settings->setSetting($key, $value);
+
+        $pdo->beginTransaction();
+        try {
+            $insertUser = $pdo->prepare(
+                "INSERT INTO users (username, email, password, user_group, is_active, created_at)
+                 VALUES (?, ?, ?, 'Admin', 1, ?)"
+            );
+            $insertUser->execute([
+                $username,
+                $email,
+                password_hash($password, PASSWORD_DEFAULT),
+                date('Y-m-d H:i:s'),
+            ]);
+
+            $insertSetting = $pdo->prepare(
+                'INSERT INTO settings (setting_key, setting_value, created_at, updated_at) VALUES (?, ?, ?, ?)'
+            );
+            $now = date('Y-m-d H:i:s');
+            foreach ($defaultSettings as $key => $value) {
+                $insertSetting->execute([$key, $value, $now, $now]);
+            }
+            $pdo->commit();
+        } catch (Throwable $e) {
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            throw $e;
+        }
+    }
+
+    private function removeInterruptedInstallation(): void {
+        $pdo = $this->db->connect();
+        $tables = [
+            'work_order_attachments',
+            'work_order_counters',
+            'work_order_logs',
+            'work_orders',
+            'activity_logs',
+            'user_logins',
+            'login_attempts',
+            'two_factor_codes',
+            'customers',
+            'users',
+            'settings',
+        ];
+
+        $pdo->exec('SET FOREIGN_KEY_CHECKS = 0');
+        try {
+            foreach ($tables as $table) {
+                $pdo->exec('DROP TABLE IF EXISTS `' . $table . '`');
+            }
+        } finally {
+            $pdo->exec('SET FOREIGN_KEY_CHECKS = 1');
         }
     }
     
