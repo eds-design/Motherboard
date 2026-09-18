@@ -483,6 +483,8 @@ return [
     'users.password_required' => 'La nueva contraseña es obligatoria.',
     'users.cannot_change_own_group' => 'No puedes cambiar tu propio grupo.',
     'settings.logo_help' => 'Ingresa la URL de tu logotipo',
+    'settings.nav_always_expanded' => 'Mostrar siempre la navegación en computadoras',
+    'settings.nav_always_expanded_help' => 'Abre el menú de navegación automáticamente en computadoras. En dispositivos móviles sigue contraído.',
     'settings.disclaimer_ph' => 'Avisos legales o términos que deben aparecer en las órdenes...',
     'settings.disclaimer_help' => 'Este texto aparece al pie de las órdenes impresas',
     'settings.print_customer_signature' => 'Mostrar firma del cliente en las órdenes impresas',

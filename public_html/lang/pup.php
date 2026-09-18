@@ -483,6 +483,8 @@ return [
     'users.password_required' => 'Need a new secret treat.',
     'users.cannot_change_own_group' => 'Cannot change your own pack rank.',
     'settings.logo_help' => 'Drop the picture-stick URL',
+    'settings.nav_always_expanded' => 'Always Keep the Sniff Trail Open on Big Screens',
+    'settings.nav_always_expanded_help' => 'Flops the nav menu open on big-screen devices. Pocket screens stay curled up.',
     'settings.disclaimer_ph' => 'Fine print for the woof-order paw prints...',
     'settings.disclaimer_help' => 'This howl shows at the bottom of printed woof orders',
     'settings.print_customer_signature' => 'Put Good Boy Paw on paw prints',

@@ -502,6 +502,8 @@ return [
     'users.password_required' => 'New password is required.',
     'users.cannot_change_own_group' => 'Cannot change your own user group.',
     'settings.logo_help' => 'Enter the URL of your logo image',
+    'settings.nav_always_expanded' => 'Always Display Nav Items on Desktop',
+    'settings.nav_always_expanded_help' => 'Opens the navigation menu automatically on desktop devices. Mobile devices still start collapsed.',
     'settings.disclaimer_ph' => 'Enter any legal disclaimers or terms that should appear on work orders...',
     'settings.disclaimer_help' => 'This text will appear at the bottom of printed work orders',
     'settings.print_customer_signature' => 'Show Customer Signature on printed work orders',

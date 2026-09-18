@@ -35,6 +35,16 @@
         </div>
     </div>
 
+    <div class="mt-6 space-y-3">
+        <div class="flex items-start">
+            <input id="nav_always_expanded" name="nav_always_expanded" type="checkbox" value="1" <?= ($settings['nav_always_expanded'] ?? '0') === '1' ? 'checked' : '' ?> class="h-4 w-4 mt-0.5 text-primary-600 focus:ring-primary-500 border-gray-300 rounded">
+            <div class="ml-2">
+                <label for="nav_always_expanded" class="block text-sm text-gray-700"><?= t('settings.nav_always_expanded') ?></label>
+                <p class="mt-1 text-sm text-gray-500"><?= t('settings.nav_always_expanded_help') ?></p>
+            </div>
+        </div>
+    </div>
+
     <div class="mt-6 flex justify-end">
         <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
             <?= t('settings.save') ?>

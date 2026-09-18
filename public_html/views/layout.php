@@ -338,6 +338,24 @@
                 </div>
             </div>
         </nav>
+        <?php if (!empty($navAlwaysExpanded)): ?>
+            <script>
+                // Operators who don't use the keyboard shortcuts can have the nav start open on
+                // desktop. Mobile keeps the collapsed default, and the toggle button still works
+                // either way. Runs inline, right after the nav, so it never flashes closed first.
+                (function () {
+                    var menu = document.getElementById('mobile-menu');
+                    if (!menu || !window.matchMedia('(min-width: 768px)').matches) {
+                        return;
+                    }
+                    menu.classList.remove('hidden');
+                    var button = document.getElementById('mobile-menu-button');
+                    if (button) {
+                        button.setAttribute('aria-expanded', 'true');
+                    }
+                })();
+            </script>
+        <?php endif; ?>
     <?php endif; ?>
 
     <main class="<?= $showAppChrome ? 'pt-6' : '' ?>">

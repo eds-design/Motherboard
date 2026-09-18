@@ -483,6 +483,8 @@ return [
     'users.password_required' => 'Le nouveau mot de passe est obligatoire.',
     'users.cannot_change_own_group' => 'Impossible de modifier votre propre groupe.',
     'settings.logo_help' => 'Saisissez l’URL de votre logo',
+    'settings.nav_always_expanded' => 'Toujours afficher la navigation sur ordinateur',
+    'settings.nav_always_expanded_help' => 'Ouvre automatiquement le menu de navigation sur ordinateur. Sur mobile, il reste replié.',
     'settings.disclaimer_ph' => 'Mentions légales ou conditions à afficher sur les ordres...',
     'settings.disclaimer_help' => 'Ce texte apparaît en bas des ordres imprimés',
     'settings.print_customer_signature' => 'Afficher la signature du client sur les ordres imprimés',

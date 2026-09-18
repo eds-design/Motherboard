@@ -129,6 +129,7 @@ class Controller {
         $companyName = $this->settingsModel->getSetting('company_name', APP_NAME);
         $data['companyName'] = !empty($companyName) ? $companyName : APP_NAME;
         $data['companyLogoUrl'] = $this->settingsModel->getSetting('company_logo_url', '');
+        $data['navAlwaysExpanded'] = $this->settingsModel->getSetting('nav_always_expanded', '0') === '1';
         $data['locale'] = I18n::getInstance()->getLocale();
         $data = $this->withFlash($data);
 
@@ -143,6 +144,7 @@ class Controller {
         $companyName = $this->settingsModel->getSetting('company_name', APP_NAME);
         $data['companyName'] = !empty($companyName) ? $companyName : APP_NAME;
         $data['companyLogoUrl'] = $this->settingsModel->getSetting('company_logo_url', '');
+        $data['navAlwaysExpanded'] = $this->settingsModel->getSetting('nav_always_expanded', '0') === '1';
         $data['locale'] = I18n::getInstance()->getLocale();
         $data = $this->withFlash($data);
 

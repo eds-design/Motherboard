@@ -483,6 +483,8 @@ return [
     'users.password_required' => 'Nové heslo je povinné.',
     'users.cannot_change_own_group' => 'Vlastní skupinu nelze změnit.',
     'settings.logo_help' => 'Zadejte URL loga',
+    'settings.nav_always_expanded' => 'Vždy zobrazovat navigaci na počítači',
+    'settings.nav_always_expanded_help' => 'Automaticky otevře navigační nabídku na počítačích. Na mobilních zařízeních zůstává sbalená.',
     'settings.disclaimer_ph' => 'Právní doložky nebo podmínky na zakázkách...',
     'settings.disclaimer_help' => 'Tento text se zobrazí dole na vytištěných zakázkách',
     'settings.print_customer_signature' => 'Zobrazit podpis zákazníka na vytištěných zakázkách',

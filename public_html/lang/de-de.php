@@ -483,6 +483,8 @@ return [
     'users.password_required' => 'Neues Passwort ist erforderlich.',
     'users.cannot_change_own_group' => 'Eigene Benutzergruppe kann nicht geändert werden.',
     'settings.logo_help' => 'Geben Sie die URL Ihres Logos ein',
+    'settings.nav_always_expanded' => 'Navigationspunkte auf dem Desktop immer anzeigen',
+    'settings.nav_always_expanded_help' => 'Öffnet das Navigationsmenü auf Desktop-Geräten automatisch. Auf Mobilgeräten bleibt es eingeklappt.',
     'settings.disclaimer_ph' => 'Rechtliche Hinweise oder Bedingungen für Arbeitsaufträge...',
     'settings.disclaimer_help' => 'Dieser Text erscheint unten auf gedruckten Arbeitsaufträgen',
     'settings.print_customer_signature' => 'Kundenunterschrift auf gedruckten Arbeitsaufträgen anzeigen',
