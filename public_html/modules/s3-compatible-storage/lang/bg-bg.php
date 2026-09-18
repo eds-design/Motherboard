@@ -1,7 +1,7 @@
 <?php
 return [
     'module.s3-compatible-storage.name' => 'Хранилище, съвместимо със S3',
-    'module.s3-compatible-storage.description' => 'Съхранява прикачените файлове към сервизни поръчки в Amazon S3, Backblaze B2, Wasabi или други услуги, съвместими със S3.',
+    'module.s3-compatible-storage.description' => 'Съхранява прикачените файлове към сервизни задачи в Amazon S3, Backblaze B2, Wasabi или други услуги, съвместими със S3.',
     'module.s3-compatible-storage.destination' => 'Хранилище, съвместимо със S3',
     'module.s3-compatible-storage.destination_help' => 'Задайте адреса на услугата, контейнера (bucket) и ключовете в този модул, след което изберете това място за съхранение.',
     'module.s3-compatible-storage.choose_destination' => 'След запазване изберете хранилище, съвместимо със S3, в Настройки → Прикачени файлове.',
