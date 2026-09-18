@@ -41,6 +41,7 @@ return [
     'inventory.sold' => 'Prodáno',
     'inventory.taxable' => 'Zdanitelné',
     'inventory.taxable_mark' => 'T',
+    'inventory.price_each' => 'za kus',
     'inventory.taxable_yes' => 'Zdanitelné',
     'inventory.taxable_no' => 'Nezdanitelné',
     'inventory.taxable_total' => 'Zdanitelný součet',

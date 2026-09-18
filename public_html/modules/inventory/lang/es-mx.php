@@ -41,6 +41,7 @@ return [
     'inventory.sold' => 'Vendidos',
     'inventory.taxable' => 'Gravable',
     'inventory.taxable_mark' => 'T',
+    'inventory.price_each' => 'c/u',
     'inventory.taxable_yes' => 'Gravable',
     'inventory.taxable_no' => 'No gravable',
     'inventory.taxable_total' => 'Total gravable',

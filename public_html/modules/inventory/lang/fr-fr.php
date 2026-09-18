@@ -41,6 +41,7 @@ return [
     'inventory.sold' => 'Vendus',
     'inventory.taxable' => 'Taxable',
     'inventory.taxable_mark' => 'T',
+    'inventory.price_each' => 'chacun',
     'inventory.taxable_yes' => 'Taxable',
     'inventory.taxable_no' => 'Non taxable',
     'inventory.taxable_total' => 'Total taxable',

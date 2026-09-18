@@ -41,6 +41,7 @@ return [
     'inventory.sold' => 'Verkauft',
     'inventory.taxable' => 'Steuerpflichtig',
     'inventory.taxable_mark' => 'T',
+    'inventory.price_each' => 'pro Stück',
     'inventory.taxable_yes' => 'Steuerpflichtig',
     'inventory.taxable_no' => 'Nicht steuerpflichtig',
     'inventory.taxable_total' => 'Steuerpflichtige Summe',

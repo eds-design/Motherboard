@@ -41,6 +41,7 @@ return [
     'inventory.sold' => 'Fetched',
     'inventory.taxable' => 'Tax-sniffed',
     'inventory.taxable_mark' => 'T',
+    'inventory.price_each' => 'per pup',
     'inventory.taxable_yes' => 'Tax-sniffed',
     'inventory.taxable_no' => 'Tax-free treat',
     'inventory.taxable_total' => 'Tax-sniffed total',
