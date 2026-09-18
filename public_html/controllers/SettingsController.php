@@ -217,7 +217,7 @@ class SettingsController extends Controller {
                 'name' => $definition['name'] ?? $slug,
                 'description' => $definition['description'] ?? '',
                 'version' => $definition['version'] ?? '',
-                'author' => $definition['author'] ?? 'Napa AI',
+                'author' => $definition['author'] ?? 'Michael Staake',
                 'enabled' => $loader->isEnabled($slug),
                 'has_settings' => !empty($definition['settings']),
                 'sort_name' => $this->moduleDisplayName($slug, $definition),
