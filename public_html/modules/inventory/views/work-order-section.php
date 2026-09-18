@@ -108,6 +108,18 @@ $totals = motherboard_inventory_work_order_totals($assigned);
                 <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
                 <div class="space-y-4">
                     <div>
+                        <label for="inventory_product_search" class="block text-sm font-medium text-gray-700"><?= t('inventory.wo_search') ?></label>
+                        <div class="relative">
+                            <input type="text"
+                                   id="inventory_product_search"
+                                   autocomplete="off"
+                                   placeholder="<?= htmlspecialchars(t('inventory.wo_search_ph')) ?>"
+                                   class="mt-1 block w-full px-4 py-3 border-2 border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm bg-white">
+                            <div id="inventory_product_results" class="absolute z-10 w-full bg-white border border-gray-300 rounded-md mt-1 hidden max-h-60 overflow-auto"></div>
+                        </div>
+                        <p class="mt-1 text-xs text-gray-500"><?= t('inventory.wo_search_help') ?></p>
+                    </div>
+                    <div>
                         <label for="inventory_product_id" class="block text-sm font-medium text-gray-700"><?= t('inventory.product') ?></label>
                         <select id="inventory_product_id" name="product_id" required class="mt-1 block w-full px-4 py-3 border-2 border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm bg-white" onchange="toggleInventoryCustomFields()">
                             <option value=""><?= t('inventory.select_product') ?></option>
@@ -118,6 +130,9 @@ $totals = motherboard_inventory_work_order_totals($assigned);
                                     (<?= htmlspecialchars($product['item_number']) ?>)
                                     — <?= htmlspecialchars(motherboard_inventory_format_price($product['price'])) ?>
                                     — <?= t('inventory.stock') ?>: <?= htmlspecialchars(motherboard_inventory_format_stock($product['stock'])) ?>
+                                    <?php if (!empty($product['on_work_order'])): ?>
+                                        — <?= t('inventory.wo_already_added') ?>
+                                    <?php endif; ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
@@ -180,12 +195,119 @@ function toggleInventoryCustomFields() {
         priceField.required = !!isCustom;
     }
 }
+
+// Typeahead over the same products the select offers. Selecting a result just drives
+// the select, so the form submits identically whichever way the product was picked.
+let inventorySearchSequence = 0;
+
+function hideInventoryProductResults() {
+    const results = document.getElementById('inventory_product_results');
+    if (results) {
+        results.classList.add('hidden');
+    }
+}
+
+function clearInventoryProductSearch() {
+    const search = document.getElementById('inventory_product_search');
+    if (search) {
+        search.value = '';
+    }
+    hideInventoryProductResults();
+}
+
+function inventoryProductTextLine(text, className = '') {
+    const line = document.createElement('div');
+    line.className = className;
+    line.textContent = text || '';
+    return line;
+}
+
+function buildInventoryProductOption(product) {
+    const option = document.createElement('div');
+    option.className = 'p-2 hover:bg-gray-100 cursor-pointer';
+    option.appendChild(inventoryProductTextLine(product.name, 'font-medium'));
+    option.appendChild(inventoryProductTextLine(
+        product.item_number + ' — ' + product.price + ' — ' + <?= json_encode(t('inventory.stock')) ?> + ': ' + product.stock,
+        'text-sm text-gray-600'
+    ));
+    option.addEventListener('click', () => selectInventoryProduct(product));
+    return option;
+}
+
+function selectInventoryProduct(product) {
+    const select = document.getElementById('inventory_product_id');
+    const search = document.getElementById('inventory_product_search');
+    if (select) {
+        select.value = String(product.id);
+    }
+    if (search) {
+        search.value = product.name + ' (' + product.item_number + ')';
+    }
+    hideInventoryProductResults();
+    toggleInventoryCustomFields();
+}
+
+document.getElementById('inventory_product_search')?.addEventListener('input', function () {
+    const query = this.value.trim();
+    const results = document.getElementById('inventory_product_results');
+    if (!results) {
+        return;
+    }
+
+    // A typed query replaces any earlier pick, so the select cannot keep a stale product.
+    const select = document.getElementById('inventory_product_id');
+    if (select) {
+        select.value = '';
+    }
+    toggleInventoryCustomFields();
+
+    if (query.length === 0) {
+        results.classList.add('hidden');
+        return;
+    }
+
+    const sequence = ++inventorySearchSequence;
+    fetch(`<?= BASE_URL ?>/work-orders/view/<?= $workOrderId ?>/products/search?q=${encodeURIComponent(query)}`)
+        .then(response => response.json())
+        .then(products => {
+            // Ignore responses that a newer keystroke has already superseded.
+            if (sequence !== inventorySearchSequence) {
+                return;
+            }
+            if (products.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'p-2 text-gray-500';
+                empty.textContent = <?= json_encode(t('inventory.none_search')) ?>;
+                results.replaceChildren(empty);
+            } else {
+                results.replaceChildren(...products.map(buildInventoryProductOption));
+            }
+            results.classList.remove('hidden');
+        })
+        .catch(error => {
+            console.error('Error searching products:', error);
+        });
+});
+
+// Picking straight from the list wins over whatever is left in the search box.
+document.getElementById('inventory_product_id')?.addEventListener('change', clearInventoryProductSearch);
+
+document.addEventListener('click', function (e) {
+    const search = document.getElementById('inventory_product_search');
+    const results = document.getElementById('inventory_product_results');
+    if (search && results && !search.contains(e.target) && !results.contains(e.target)) {
+        results.classList.add('hidden');
+    }
+});
+
 function openAddInventoryProductModal() {
     document.getElementById('addInventoryProductModal').classList.remove('hidden');
+    clearInventoryProductSearch();
     toggleInventoryCustomFields();
 }
 function closeAddInventoryProductModal() {
     document.getElementById('addInventoryProductModal').classList.add('hidden');
+    clearInventoryProductSearch();
 }
 toggleInventoryCustomFields();
 </script>

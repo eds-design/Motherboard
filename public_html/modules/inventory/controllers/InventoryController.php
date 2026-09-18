@@ -149,6 +149,31 @@ class InventoryController extends Controller {
         }
     }
 
+    /**
+     * Typeahead backing the Add Product modal. Matches on product name and item
+     * number only, and is limited to the same set the modal's select offers.
+     */
+    public function searchWorkOrderProducts($id) {
+        header('Content-Type: application/json');
+        $this->requireWorkOrderEditor();
+        $workOrder = $this->requireWorkOrder($id);
+
+        $query = trim((string) ($_GET['q'] ?? ''));
+        if ($query === '') {
+            echo json_encode([]);
+            return;
+        }
+
+        $products = $this->productModel->getAvailableForWorkOrder((int) $workOrder['id'], $query, 20);
+        echo json_encode(array_map(static fn(array $product): array => [
+            'id' => (int) $product['id'],
+            'name' => $product['name'],
+            'item_number' => $product['item_number'],
+            'price' => motherboard_inventory_format_price($product['price']),
+            'stock' => motherboard_inventory_format_stock($product['stock']),
+        ], $products));
+    }
+
     public function addWorkOrderProduct($id) {
         $this->requireWorkOrderEditor();
         $this->requirePost();

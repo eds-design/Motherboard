@@ -63,20 +63,42 @@ class InventoryProduct extends Model {
         return (int) $stmt->fetch()['count'];
     }
 
-    public function getAvailableForWorkOrder(int $workOrderId): array {
-        $stmt = $this->db->prepare("
-            SELECT p.*, c.name AS category_name
+    /**
+     * Products that can be put on this work order. Products already on it stay in the
+     * list, flagged with on_work_order: adding one again folds into the existing line
+     * rather than creating a second one.
+     */
+    public function getAvailableForWorkOrder(int $workOrderId, ?string $search = null, ?int $limit = null): array {
+        $sql = "
+            SELECT p.*, c.name AS category_name,
+            EXISTS (
+                SELECT 1 FROM work_order_products wop
+                WHERE wop.work_order_id = ? AND wop.product_id = p.id
+            ) AS on_work_order
             FROM inventory_products p
             LEFT JOIN inventory_categories c ON c.id = p.category_id
             WHERE p.item_number <> ?
-            AND p.id NOT IN (
-                SELECT product_id FROM work_order_products
-                WHERE work_order_id = ? AND product_id IS NOT NULL
-            )
             AND (p.stock = -1 OR p.stock > 0)
-            ORDER BY p.name ASC
-        ");
-        $stmt->execute([motherboard_inventory_custom_item_number(), $workOrderId]);
+        ";
+        $params = [$workOrderId, motherboard_inventory_custom_item_number()];
+
+        // Name and item number only: descriptions and prices are deliberately not searched.
+        if ($search !== null && $search !== '') {
+            $sql .= " AND (p.name LIKE ? OR p.item_number LIKE ?)";
+            $term = '%' . $search . '%';
+            $params[] = $term;
+            $params[] = $term;
+        }
+
+        $sql .= " ORDER BY p.name ASC";
+
+        if ($limit) {
+            $sql .= " LIMIT ?";
+            $params[] = (int) $limit;
+        }
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
         return $stmt->fetchAll();
     }
 

@@ -35,6 +35,8 @@ Hooks::addAction('router.register', function (Router $router) use ($inventoryCon
     $router->addRoute('/inventory/products/{id}', 'InventoryController', 'updateProduct', $inventoryController);
     $router->addRoute('/inventory/products/{id}/delete', 'InventoryController', 'deleteProduct', $inventoryController);
     $router->addRoute('/work-orders/view/{id}/products', 'InventoryController', 'addWorkOrderProduct', $inventoryController);
+    // Registered ahead of the {lineId} routes so 'search' is not matched as a line id.
+    $router->addRoute('/work-orders/view/{id}/products/search', 'InventoryController', 'searchWorkOrderProducts', $inventoryController);
     $router->addRoute('/work-orders/view/{id}/products/{lineId}', 'InventoryController', 'updateWorkOrderProduct', $inventoryController);
     $router->addRoute('/work-orders/view/{id}/products/{lineId}/delete', 'InventoryController', 'removeWorkOrderProduct', $inventoryController);
 });
