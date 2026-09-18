@@ -123,6 +123,7 @@ npm run build:css
 Self-contained PHP arrays in `public_html/lang/`:
 
 - `en-us.php` (required)
+- `bg-bg.php`
 - `es-mx.php`
 - `cs-cz.php`
 - `de-de.php`

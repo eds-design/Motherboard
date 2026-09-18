@@ -145,6 +145,7 @@ if ($installed) {
     $locale = $settingsModel->getSetting('language', 'en-us');
     if ($locale && $locale !== 'en-us') {
         $i18n->load($locale);
+        $moduleLoader->reloadLanguages();
     }
 }
 
