@@ -25,6 +25,7 @@ return [
     'inventory.product' => 'Producto',
     'inventory.product_name' => 'Nombre del producto',
     'inventory.item_number' => 'Número de artículo',
+    'inventory.item' => 'Artículo',
     'inventory.item_number_exists' => 'Ya existe un producto con ese número de artículo.',
     'inventory.item_number_required' => 'El número de artículo es obligatorio.',
     'inventory.item_number_invalid' => 'El número de artículo debe ser un slug: solo minúsculas, números y guiones.',

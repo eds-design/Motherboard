@@ -11,9 +11,10 @@ $hideHeading = motherboard_inventory_hide_printout_heading();
     <table class="w-full text-xs text-gray-700">
         <thead>
             <tr>
-                <th class="text-left py-1 font-medium"><?= t('inventory.product_name') ?></th>
+                <th class="text-left py-1 font-medium"><?= t('inventory.item') ?></th>
                 <th class="text-left py-1 font-medium"><?= t('inventory.price') ?></th>
                 <th class="text-left py-1 font-medium"><?= t('inventory.quantity') ?></th>
+                <th class="text-right py-1 font-medium"><?= t('inventory.line_total') ?></th>
             </tr>
         </thead>
         <tbody>
@@ -29,6 +30,7 @@ $hideHeading = motherboard_inventory_hide_printout_heading();
                         <?= htmlspecialchars(motherboard_inventory_format_money($line['unit_price'])) ?><?php if (!empty($line['taxable'])): ?><span title="<?= htmlspecialchars(t('inventory.taxable')) ?>"><?= t('inventory.taxable_mark') ?></span><?php endif; ?>
                     </td>
                     <td class="py-1"><?= (int) $line['quantity'] ?></td>
+                    <td class="py-1 text-right whitespace-nowrap"><?= htmlspecialchars(motherboard_inventory_format_money($line['line_total'])) ?></td>
                 </tr>
             <?php endforeach; ?>
         </tbody>

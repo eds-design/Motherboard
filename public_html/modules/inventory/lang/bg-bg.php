@@ -25,6 +25,7 @@ return [
     'inventory.product' => 'Продукт',
     'inventory.product_name' => 'Име на продукта',
     'inventory.item_number' => 'Артикулен код',
+    'inventory.item' => 'Артикул',
     'inventory.item_number_exists' => 'Вече съществува продукт с този артикулен код.',
     'inventory.item_number_required' => 'Артикулният код е задължителен.',
     'inventory.item_number_invalid' => 'Артикулният код трябва да съдържа само малки латински букви, цифри и тирета.',

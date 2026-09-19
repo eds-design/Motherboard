@@ -25,6 +25,7 @@ return [
     'inventory.product' => 'Produkt',
     'inventory.product_name' => 'Produktname',
     'inventory.item_number' => 'Artikelnummer',
+    'inventory.item' => 'Artikel',
     'inventory.item_number_exists' => 'Ein Produkt mit dieser Artikelnummer existiert bereits.',
     'inventory.item_number_required' => 'Die Artikelnummer ist erforderlich.',
     'inventory.item_number_invalid' => 'Die Artikelnummer muss ein Slug sein: nur Kleinbuchstaben, Zahlen und Bindestriche.',

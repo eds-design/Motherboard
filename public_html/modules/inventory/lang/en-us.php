@@ -25,6 +25,7 @@ return [
     'inventory.product' => 'Product',
     'inventory.product_name' => 'Product name',
     'inventory.item_number' => 'Item number',
+    'inventory.item' => 'Item',
     'inventory.item_number_exists' => 'A product with that item number already exists.',
     'inventory.item_number_required' => 'Item number is required.',
     'inventory.item_number_invalid' => 'Item number must be a slug: lowercase letters, numbers, and hyphens only.',

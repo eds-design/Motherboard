@@ -25,6 +25,7 @@ return [
     'inventory.product' => 'Chew-toy',
     'inventory.product_name' => 'Chew-toy name',
     'inventory.item_number' => 'Tag number',
+    'inventory.item' => 'Chew-toy',
     'inventory.item_number_exists' => 'Another chew-toy already wears that tag.',
     'inventory.item_number_required' => 'Every chew-toy needs a tag number.',
     'inventory.item_number_invalid' => 'Tag numbers are slugs: lowercase letters, numbers, and hyphens only. No spaces.',

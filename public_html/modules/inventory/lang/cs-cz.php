@@ -25,6 +25,7 @@ return [
     'inventory.product' => 'Produkt',
     'inventory.product_name' => 'Název produktu',
     'inventory.item_number' => 'Číslo položky',
+    'inventory.item' => 'Položka',
     'inventory.item_number_exists' => 'Produkt s tímto číslem položky již existuje.',
     'inventory.item_number_required' => 'Číslo položky je povinné.',
     'inventory.item_number_invalid' => 'Číslo položky musí být slug: pouze malá písmena, čísla a pomlčky.',
