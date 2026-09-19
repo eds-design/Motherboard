@@ -17,7 +17,7 @@ $hideHeading = motherboard_inventory_hide_printout_heading();
                 <th class="text-right py-1 font-medium"><?= t('inventory.line_total') ?></th>
             </tr>
         </thead>
-        <tbody>
+        <tbody class="border-b border-gray-200">
             <?php foreach ($assigned as $line): ?>
                 <tr class="border-t border-gray-200">
                     <td class="py-1">
