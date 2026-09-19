@@ -766,11 +766,11 @@ $printOptions = $printOptions ?? ['has_disclaimer' => true, 'customer_signature'
                 <h4 class="text-sm font-semibold text-gray-900 mb-2"><?= t('wo.print_options_disclaimer') ?></h4>
                 <div class="space-y-2">
                     <div class="flex items-start">
-                        <input id="print_with_disclaimer" name="print_disclaimer" type="radio" value="1" checked class="h-4 w-4 mt-0.5 text-primary-600 focus:ring-primary-500 border-gray-300">
+                        <input id="print_with_disclaimer" name="print_disclaimer" type="radio" value="1" class="h-4 w-4 mt-0.5 text-primary-600 focus:ring-primary-500 border-gray-300">
                         <label for="print_with_disclaimer" class="ml-2 block text-sm text-gray-700"><?= t('wo.print_options_with_disclaimer') ?></label>
                     </div>
                     <div class="flex items-start">
-                        <input id="print_without_disclaimer" name="print_disclaimer" type="radio" value="0" class="h-4 w-4 mt-0.5 text-primary-600 focus:ring-primary-500 border-gray-300">
+                        <input id="print_without_disclaimer" name="print_disclaimer" type="radio" value="0" checked class="h-4 w-4 mt-0.5 text-primary-600 focus:ring-primary-500 border-gray-300">
                         <label for="print_without_disclaimer" class="ml-2 block text-sm text-gray-700"><?= t('wo.print_options_without_disclaimer') ?></label>
                     </div>
                 </div>
