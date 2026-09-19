@@ -259,12 +259,6 @@ function hideCreateModal() {
     document.getElementById('createCustomerForm').reset();
 }
 
-// Close modal when clicking outside
-document.getElementById('createModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        hideCreateModal();
-    }
-});
 </script>
 
 <?php 

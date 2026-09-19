@@ -298,7 +298,7 @@ ob_start();
 <!-- Password Change Modal -->
 <div id="passwordModal" class="fixed inset-0 z-50 overflow-y-auto hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
     <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" onclick="closePasswordModal()"></div>
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
         
         <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
         
@@ -368,13 +368,6 @@ document.getElementById('passwordForm').addEventListener('submit', function(e) {
         e.preventDefault();
         alert(<?= json_encode(t('js.password_short')) ?>);
         return false;
-    }
-});
-
-// Close modal on Escape key
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-        closePasswordModal();
     }
 });
 </script>

@@ -309,13 +309,6 @@ function toggleUserStatus(userId, activate) {
     }
 }
 
-// Close modal when clicking outside
-document.getElementById('createModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        hideCreateModal();
-    }
-});
-
 // Hide modal if user was created successfully
 <?php if (isset($message) && $message): ?>
 document.addEventListener('DOMContentLoaded', function() {

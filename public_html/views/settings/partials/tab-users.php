@@ -256,12 +256,6 @@ function toggleUserStatus(userId, activate) {
     }
 }
 
-document.getElementById('createModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        hideCreateModal();
-    }
-});
-
 <?php if (isset($message) && $message && ($activeTab ?? '') === 'users'): ?>
 document.addEventListener('DOMContentLoaded', function() {
     hideCreateModal();

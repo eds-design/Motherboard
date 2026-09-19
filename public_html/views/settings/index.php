@@ -280,12 +280,6 @@ function initAttachmentExtensions() {
         closeWildcardModal();
     });
     cancelButton?.addEventListener('click', closeWildcardModal);
-    modal?.addEventListener('click', function(e) {
-        if (e.target === modal) {
-            closeWildcardModal();
-        }
-    });
-
     sync();
 }
 
@@ -471,12 +465,6 @@ function initAttachmentExtensions() {
     });
 
     document.getElementById('unsavedCancelBtn').addEventListener('click', closeUnsavedModal);
-
-    unsavedModal.addEventListener('click', function(e) {
-        if (e.target === unsavedModal) {
-            closeUnsavedModal();
-        }
-    });
 
     document.addEventListener('click', function(e) {
         const link = e.target.closest('a');

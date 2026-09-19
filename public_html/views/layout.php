@@ -438,6 +438,31 @@
     <?php endif; ?>
 
     <script>
+        // Modals close only through their own buttons, so a stray click outside or an Escape
+        // never throws away what was typed. This runs in the capture phase, ahead of any
+        // per-modal handler. A modal that is safe to dismiss casually can opt out with
+        // data-modal-dismissable.
+        (function () {
+            const MODAL = '.fixed.inset-0:is(.bg-gray-600, [role="dialog"]):not(#command-palette):not([data-modal-dismissable])';
+
+            document.addEventListener('click', function (e) {
+                const target = e.target;
+                const isBackdrop = target.matches(MODAL)
+                    || (target.matches('.fixed.inset-0') && target.parentElement && target.parentElement.closest(MODAL));
+                if (isBackdrop) {
+                    e.stopImmediatePropagation();
+                }
+            }, true);
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && document.querySelector(MODAL + ':not(.hidden)')) {
+                    e.stopImmediatePropagation();
+                }
+            }, true);
+        })();
+    </script>
+
+    <script>
         function isEditableField(element) {
             if (!element) {
                 return false;

@@ -99,8 +99,9 @@ ob_start();
 
 <script>
 (function () {
-    // Cancel, a click on the backdrop and Escape all put back what the textarea held when the
-    // modal was opened, so a closed modal never leaves an edit behind for the next Save.
+    // Only Cancel closes a template modal, as with the inventory modals, so a stray click outside
+    // never discards an edit. Cancel puts back what the textarea held when the modal was opened,
+    // so a closed modal never leaves an edit behind for the next Save.
     const opened = new Map();
 
     function fieldFor(event) {
@@ -150,20 +151,6 @@ ob_start();
         });
     });
 
-    document.querySelectorAll('[data-template-modal]').forEach(function (modal) {
-        modal.addEventListener('click', function (e) {
-            if (e.target === modal) {
-                revert(modal);
-            }
-        });
-    });
-
-    document.addEventListener('keydown', function (e) {
-        if (e.key !== 'Escape') {
-            return;
-        }
-        document.querySelectorAll('[data-template-modal]:not(.hidden)').forEach(revert);
-    });
 })();
 </script>
 

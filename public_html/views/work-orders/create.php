@@ -881,26 +881,8 @@ document.addEventListener('click', function() {
     closeAttachmentMenus();
 });
 
-document.getElementById('addAttachmentModal')?.addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeAddAttachmentModal();
-    }
-});
-document.getElementById('editAttachmentModal')?.addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeEditAttachmentModal();
-    }
-});
-document.getElementById('removeAttachmentModal')?.addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeRemoveAttachmentModal();
-    }
-});
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
-        closeAddAttachmentModal();
-        closeEditAttachmentModal();
-        closeRemoveAttachmentModal();
         closeAttachmentMenus();
     }
 });

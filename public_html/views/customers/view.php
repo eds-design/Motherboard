@@ -286,20 +286,6 @@ function openDeleteModal() {
 function closeDeleteModal() {
     document.getElementById('deleteModal').classList.add('hidden');
 }
-
-// Close modal when clicking outside
-document.getElementById('deleteModal')?.addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeDeleteModal();
-    }
-});
-
-// Close modal with Escape key
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape' && document.getElementById('deleteModal') && !document.getElementById('deleteModal').classList.contains('hidden')) {
-        closeDeleteModal();
-    }
-});
 </script>
 <?php endif; ?>
 

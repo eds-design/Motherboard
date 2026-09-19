@@ -982,13 +982,6 @@ function copyToClipboard(fieldId) {
     }
 }
 
-// Close modal when clicking outside
-document.getElementById('loginModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeLoginModal();
-    }
-});
-
 // Change modal functions
 function openChangeModal(detailsData) {
     try {
@@ -1024,24 +1017,9 @@ function closeChangeModal() {
     document.getElementById('changeModal').classList.add('hidden');
 }
 
-// Close change modal when clicking outside
-document.getElementById('changeModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeChangeModal();
-    }
-});
-
-// Close modals with Escape key
+// Escape closes the attachment menus and lightbox; modals are handled in layout.php
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
-        closeLoginModal();
-        closeChangeModal();
-        if (document.getElementById('deleteModal')) {
-            closeDeleteModal();
-        }
-        closeRemoveAttachmentModal();
-        closeEditAttachmentModal();
-        closeAddAttachmentModal();
         closeAttachmentMenus();
         closeAttachmentLightbox();
     }
@@ -1155,12 +1133,6 @@ function closeAddAttachmentModal() {
     }
 }
 
-document.getElementById('addAttachmentModal')?.addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeAddAttachmentModal();
-    }
-});
-
 function openEditAttachmentModal(id, name, description) {
     closeAttachmentMenus();
     const modal = document.getElementById('editAttachmentModal');
@@ -1184,12 +1156,6 @@ function closeEditAttachmentModal() {
     }
 }
 
-document.getElementById('editAttachmentModal')?.addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeEditAttachmentModal();
-    }
-});
-
 function openRemoveAttachmentModal(id, name) {
     closeAttachmentMenus();
 
@@ -1211,12 +1177,6 @@ function closeRemoveAttachmentModal() {
     }
 }
 
-document.getElementById('removeAttachmentModal')?.addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeRemoveAttachmentModal();
-    }
-});
-
 // Delete modal functions
 function openDeleteModal() {
     document.getElementById('deleteModal').classList.remove('hidden');
@@ -1226,12 +1186,6 @@ function closeDeleteModal() {
     document.getElementById('deleteModal').classList.add('hidden');
 }
 
-// Close delete modal when clicking outside
-document.getElementById('deleteModal')?.addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeDeleteModal();
-    }
-});
 </script>
 
 <?php 
