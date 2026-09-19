@@ -20,6 +20,11 @@
                     </p>
                 </div>
             </div>
+            <div class="mt-6">
+                <label for="currency" class="block text-sm font-medium text-gray-700"><?= t('settings.currency') ?></label>
+                <input type="text" id="currency" name="currency" maxlength="10" value="<?= htmlspecialchars($settings['currency'] ?? '$') ?>" class="mt-1 block w-64 px-4 py-3 border-2 border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm bg-white">
+                <p class="mt-1 text-sm text-gray-500"><?= t('settings.currency_help') ?></p>
+            </div>
         </div>
 
         <div>

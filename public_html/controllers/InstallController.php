@@ -279,6 +279,7 @@ class InstallController extends Controller {
             'language' => 'en-us',
             'print_language' => 'en-us',
             'phone_number_format' => 'default',
+            'currency' => '$',
             'require_2fa' => '0',
             'attachment_destination' => 'local',
             'attachment_max_size_mb' => '10',

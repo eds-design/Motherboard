@@ -65,6 +65,7 @@ class SettingsController extends Controller {
                 } elseif ($section === 'localization') {
                     $formatData = [
                         'phone_number_format' => $_POST['phone_number_format'],
+                        'currency' => mb_substr(trim($_POST['currency'] ?? ''), 0, 10),
                     ];
                     $this->settingsModel->updateFormatSettings($formatData);
 

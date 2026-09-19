@@ -532,6 +532,8 @@ return [
     'settings.phone_format_default' => 'Default (minimum 7 digits)',
     'settings.phone_format_a' => 'USA Format A: (555) 555-5555',
     'settings.phone_format_b' => 'USA Format B: 555-555-5555',
+    'settings.currency' => 'Currency',
+    'settings.currency_help' => 'Symbol or text shown with prices, such as $, €, £ or USD',
     'settings.phone_format_help' => 'Controls how phone numbers are formatted and validated across the system',
     'settings.example' => 'Example',
     'settings.pattern' => 'Pattern',
