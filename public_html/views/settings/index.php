@@ -30,7 +30,7 @@ $tabHelp = [
             <p
                 class="mt-1 text-sm text-gray-600"
                 title="<?= htmlspecialchars(t('settings.php_version') . ': ' . ($phpVersion ?? t('common.unknown'))) ?>">
-                <span class="text-gray-900"><?= htmlspecialchars(APP_NAME ?? 'Motherboard') ?></span><span class="text-gray-900"> <?= htmlspecialchars($appVersion ?? t('common.unknown')) ?></span>
+                <span class="text-gray-900">Motherboard</span><span class="text-gray-900"> <?= htmlspecialchars($appVersion ?? t('common.unknown')) ?></span>
             </p>
         </div>
     </div>
