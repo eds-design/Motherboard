@@ -54,7 +54,7 @@ return [
     'inventory.hide_printout_heading' => 'Hide inventory heading on printout',
     'inventory.hide_printout_heading_help' => 'When checked, the "Inventory" heading is omitted above the inventory items on printed work orders.',
     'inventory.hide_subtotals' => 'Hide subtotals',
-    'inventory.hide_subtotals_help' => 'When checked, the taxable, non-taxable, and tax lines are hidden and only the total is shown.',
+    'inventory.hide_subtotals_help' => 'When checked, the taxable and non-taxable lines are hidden and only the total is shown. Tax is still listed whenever any is charged.',
     'inventory.tax_amount' => 'Tax ({rate}%)',
     'inventory.invalid_tax_rate' => 'Enter a tax rate between 0 and 100.',
     'inventory.grand_total' => 'Total',

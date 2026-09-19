@@ -54,7 +54,7 @@ return [
     'inventory.hide_printout_heading' => 'Skrýt nadpis skladu na výtisku',
     'inventory.hide_printout_heading_help' => 'Pokud je možnost zapnutá, nadpis „Sklad“ se nad skladovými položkami na vytištěných zakázkách nezobrazí.',
     'inventory.hide_subtotals' => 'Skrýt mezisoučty',
-    'inventory.hide_subtotals_help' => 'Pokud je možnost zapnutá, řádky se zdanitelným, nezdanitelným součtem a daní se nezobrazí a zůstane jen celková částka.',
+    'inventory.hide_subtotals_help' => 'Pokud je možnost zapnutá, řádky se zdanitelným a nezdanitelným součtem se nezobrazí a zůstane jen celková částka. Daň se uvádí vždy, když je účtována.',
     'inventory.tax_amount' => 'Daň ({rate} %)',
     'inventory.invalid_tax_rate' => 'Zadejte sazbu daně mezi 0 a 100.',
     'inventory.grand_total' => 'Celkem',

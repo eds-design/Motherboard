@@ -54,7 +54,7 @@ return [
     'inventory.hide_printout_heading' => 'Masquer le titre inventaire sur l’impression',
     'inventory.hide_printout_heading_help' => 'Si cette option est activée, le titre « Inventaire » n’apparaît pas au-dessus des articles d’inventaire sur les ordres de travail imprimés.',
     'inventory.hide_subtotals' => 'Masquer les sous-totaux',
-    'inventory.hide_subtotals_help' => 'Si cette option est activée, les lignes du total taxable, du total non taxable et de la taxe sont masquées et seul le total reste affiché.',
+    'inventory.hide_subtotals_help' => 'Si cette option est activée, les lignes du total taxable et du total non taxable sont masquées et seul le total reste affiché. La taxe reste indiquée dès qu’il y en a une.',
     'inventory.tax_amount' => 'Taxe ({rate} %)',
     'inventory.invalid_tax_rate' => 'Saisissez un taux de taxe compris entre 0 et 100.',
     'inventory.grand_total' => 'Total',

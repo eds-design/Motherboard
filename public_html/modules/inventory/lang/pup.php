@@ -54,7 +54,7 @@ return [
     'inventory.hide_printout_heading' => 'Hide the stash label on paw-prints',
     'inventory.hide_printout_heading_help' => 'Check to keep the “Treat Stash” label off the paper woof order, snacks only.',
     'inventory.hide_subtotals' => 'Hide the little tally lines',
-    'inventory.hide_subtotals_help' => 'Check to tuck away the tax-sniffed, tax-free and tax lines, leaving just the big number.',
+    'inventory.hide_subtotals_help' => 'Check to tuck away the tax-sniffed and tax-free lines, leaving just the big number. Any tax collected still gets its own line.',
     'inventory.tax_amount' => 'Tax sniff ({rate}%)',
     'inventory.invalid_tax_rate' => 'Tax sniff rate must be between 0 and 100.',
     'inventory.grand_total' => 'Whole stash',

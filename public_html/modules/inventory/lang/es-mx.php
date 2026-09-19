@@ -54,7 +54,7 @@ return [
     'inventory.hide_printout_heading' => 'Ocultar el título de inventario en la impresión',
     'inventory.hide_printout_heading_help' => 'Si se marca, el título «Inventario» no se muestra arriba de los artículos de inventario en las órdenes impresas.',
     'inventory.hide_subtotals' => 'Ocultar subtotales',
-    'inventory.hide_subtotals_help' => 'Si se marca, las líneas de total gravable, total no gravable e impuesto se ocultan y solo se muestra el total.',
+    'inventory.hide_subtotals_help' => 'Si se marca, las líneas de total gravable y total no gravable se ocultan y solo se muestra el total. El impuesto se sigue mostrando siempre que se cobre.',
     'inventory.tax_amount' => 'Impuesto ({rate} %)',
     'inventory.invalid_tax_rate' => 'Ingresa una tasa de impuesto entre 0 y 100.',
     'inventory.grand_total' => 'Total',

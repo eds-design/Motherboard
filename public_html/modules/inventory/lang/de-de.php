@@ -54,7 +54,7 @@ return [
     'inventory.hide_printout_heading' => 'Inventar-Überschrift auf Ausdruck ausblenden',
     'inventory.hide_printout_heading_help' => 'Wenn aktiviert, wird die Überschrift „Inventar“ über den Inventarposten auf gedruckten Arbeitsaufträgen weggelassen.',
     'inventory.hide_subtotals' => 'Zwischensummen ausblenden',
-    'inventory.hide_subtotals_help' => 'Wenn aktiviert, werden die Zeilen für steuerpflichtige, nicht steuerpflichtige Summe und Steuer ausgeblendet und nur die Gesamtsumme angezeigt.',
+    'inventory.hide_subtotals_help' => 'Wenn aktiviert, werden die Zeilen für steuerpflichtige und nicht steuerpflichtige Summe ausgeblendet und nur die Gesamtsumme angezeigt. Die Steuer wird weiterhin aufgeführt, sobald welche anfällt.',
     'inventory.tax_amount' => 'Steuer ({rate} %)',
     'inventory.invalid_tax_rate' => 'Geben Sie einen Steuersatz zwischen 0 und 100 ein.',
     'inventory.grand_total' => 'Gesamt',

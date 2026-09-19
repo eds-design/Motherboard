@@ -40,6 +40,9 @@ $hideSubtotals = motherboard_inventory_hide_subtotals();
         <?php if (!$hideSubtotals): ?>
             <div><?= t('inventory.taxable_total') ?>: <?= htmlspecialchars(motherboard_inventory_format_money($totals['taxable'])) ?></div>
             <div><?= t('inventory.nontaxable_total') ?>: <?= htmlspecialchars(motherboard_inventory_format_money($totals['nontaxable'])) ?></div>
+        <?php endif; ?>
+        <?php // Tax charged has to stay visible even when the subtotals are hidden. ?>
+        <?php if (!$hideSubtotals || (float) $totals['tax'] != 0.0): ?>
             <div><?= t('inventory.tax_amount', ['rate' => motherboard_inventory_format_tax_rate($totals['tax_rate'])]) ?>: <?= htmlspecialchars(motherboard_inventory_format_money($totals['tax'])) ?></div>
         <?php endif; ?>
         <div class="font-semibold"><?= t('inventory.grand_total') ?>: <?= htmlspecialchars(motherboard_inventory_format_money($totals['grand_total'])) ?></div>
