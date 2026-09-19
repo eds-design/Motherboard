@@ -22,7 +22,7 @@ if (!$hasAddress) {
             <form method="POST" action="<?= BASE_URL ?>/work-orders/view/<?= $workOrderId ?>/customer-email">
                 <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
                 <input type="hidden" name="customer_email_enabled" value="<?= $disabled ? '1' : '0' ?>">
-                <button type="submit" class="inline-flex items-center px-3 py-1.5 border text-sm font-medium rounded-md <?= $disabled ? 'border-transparent text-white bg-primary-600 hover:bg-primary-700' : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50' ?> focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                <button type="submit" class="inline-flex items-center px-3 py-1.5 border text-sm font-medium rounded-md border-gray-300 text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
                     <?= $disabled ? t('customer_email.enable') : t('customer_email.disable') ?>
                 </button>
             </form>

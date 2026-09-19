@@ -17,7 +17,7 @@ $showReference = $warranty && $referenceId;
     <div class="px-6 py-4 flex items-center justify-between<?= $showReference ? ' border-b border-gray-200' : '' ?>">
         <h2 class="text-lg font-medium text-gray-900"><?= t('warranty.section') ?></h2>
         <?php if ($canEdit): ?>
-            <button type="button" onclick="openWarrantyModal()" class="inline-flex items-center px-3 py-1.5 border text-sm font-medium rounded-md <?= $warranty ? 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50' : 'border-transparent text-white bg-primary-600 hover:bg-primary-700' ?> focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+            <button type="button" onclick="openWarrantyModal()" class="inline-flex items-center px-3 py-1.5 border text-sm font-medium rounded-md border-gray-300 text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
                 <?= $warranty ? t('warranty.manage') : t('warranty.set') ?>
             </button>
         <?php endif; ?>
