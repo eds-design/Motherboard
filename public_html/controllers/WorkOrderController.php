@@ -347,7 +347,8 @@ class WorkOrderController extends Controller {
             'message' => $message,
             'csrf_token' => $this->generateCSRF(),
             'canEdit' => $_SESSION['user_group'] !== 'Limited',
-            'editDevice' => $editDevice
+            'editDevice' => $editDevice,
+            'printOptions' => $this->printOptionDefaults()
         ]);
     }
     
@@ -364,6 +365,16 @@ class WorkOrderController extends Controller {
         ]);
     }
     
+    private function printOptionDefaults() {
+        $companyInfo = $this->settingsModel->getCompanyInfo();
+
+        return [
+            'has_disclaimer' => trim((string) ($companyInfo['work_order_disclaimer'] ?? '')) !== '',
+            'customer_signature' => !empty($companyInfo['print_customer_signature']),
+            'technician_signature' => !empty($companyInfo['print_technician_signature']),
+        ];
+    }
+
     public function print($id) {
         $this->requireAuth();
         
@@ -375,7 +386,18 @@ class WorkOrderController extends Controller {
         applyPrintLanguage($this->settingsModel);
         
         $companyInfo = $this->settingsModel->getCompanyInfo();
-        
+
+        // Per-printout overrides chosen in the print options modal on the work order view.
+        if (isset($_GET['disclaimer']) && $_GET['disclaimer'] !== '1') {
+            $companyInfo['work_order_disclaimer'] = '';
+        }
+        if (isset($_GET['customer_signature'])) {
+            $companyInfo['print_customer_signature'] = $_GET['customer_signature'] === '1' ? '1' : '0';
+        }
+        if (isset($_GET['technician_signature'])) {
+            $companyInfo['print_technician_signature'] = $_GET['technician_signature'] === '1' ? '1' : '0';
+        }
+
         $this->view('work-orders/print', [
             'workOrder' => $workOrder,
             'companyInfo' => $companyInfo,

@@ -34,12 +34,12 @@ ob_start();
                 </div>
             </div>
             <div class="flex space-x-3">
-                <a href="<?= BASE_URL ?>/work-orders/print/<?= $workOrder['id'] ?>" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                <button type="button" onclick="openPrintOptionsModal()" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
                     <svg class="-ml-1 mr-2 h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                     </svg>
                     <?= t('common.print') ?>
-                </a>
+                </button>
                 <?php if ($_SESSION['user_group'] === 'Admin'): ?>
                 <button type="button" onclick="openDeleteModal()" class="inline-flex items-center px-4 py-2 border border-red-300 shadow-sm text-sm font-medium rounded-md text-red-700 bg-white hover:bg-red-50">
                     <svg class="-ml-1 mr-2 h-5 w-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -741,6 +741,69 @@ ob_start();
     </div>
 </div>
 
+<!-- Print Options Modal -->
+<?php
+$printOptions = $printOptions ?? ['has_disclaimer' => true, 'customer_signature' => true, 'technician_signature' => true];
+?>
+<div id="printOptionsModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+    <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+            <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+        </div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        <div class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-medium text-gray-900"><?= t('wo.print_options_title') ?></h3>
+                <button type="button" onclick="closePrintOptionsModal()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <?php if ($printOptions['has_disclaimer']): ?>
+            <div class="mb-5">
+                <h4 class="text-sm font-semibold text-gray-900 mb-2"><?= t('wo.print_options_disclaimer') ?></h4>
+                <div class="space-y-2">
+                    <div class="flex items-start">
+                        <input id="print_with_disclaimer" name="print_disclaimer" type="radio" value="1" checked class="h-4 w-4 mt-0.5 text-primary-600 focus:ring-primary-500 border-gray-300">
+                        <label for="print_with_disclaimer" class="ml-2 block text-sm text-gray-700"><?= t('wo.print_options_with_disclaimer') ?></label>
+                    </div>
+                    <div class="flex items-start">
+                        <input id="print_without_disclaimer" name="print_disclaimer" type="radio" value="0" class="h-4 w-4 mt-0.5 text-primary-600 focus:ring-primary-500 border-gray-300">
+                        <label for="print_without_disclaimer" class="ml-2 block text-sm text-gray-700"><?= t('wo.print_options_without_disclaimer') ?></label>
+                    </div>
+                </div>
+            </div>
+            <?php endif; ?>
+
+            <div class="mb-5">
+                <h4 class="text-sm font-semibold text-gray-900 mb-2"><?= t('wo.print_options_signatures') ?></h4>
+                <div class="space-y-2">
+                    <div class="flex items-start">
+                        <input id="print_customer_signature_option" type="checkbox" value="1" <?= $printOptions['customer_signature'] ? 'checked' : '' ?> class="h-4 w-4 mt-0.5 text-primary-600 focus:ring-primary-500 border-gray-300 rounded">
+                        <label for="print_customer_signature_option" class="ml-2 block text-sm text-gray-700"><?= t('wo.print_options_customer_signature') ?></label>
+                    </div>
+                    <div class="flex items-start">
+                        <input id="print_technician_signature_option" type="checkbox" value="1" <?= $printOptions['technician_signature'] ? 'checked' : '' ?> class="h-4 w-4 mt-0.5 text-primary-600 focus:ring-primary-500 border-gray-300 rounded">
+                        <label for="print_technician_signature_option" class="ml-2 block text-sm text-gray-700"><?= t('wo.print_options_technician_signature') ?></label>
+                    </div>
+                </div>
+                <p class="mt-2 text-xs text-gray-500"><?= t('wo.print_options_signatures_help') ?></p>
+            </div>
+
+            <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+                <button type="button" onclick="submitPrintOptions()" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-primary-600 text-base font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:ml-3 sm:w-auto sm:text-sm">
+                    <?= t('common.print') ?>
+                </button>
+                <button type="button" onclick="closePrintOptionsModal()" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:mt-0 sm:w-auto sm:text-sm">
+                    <?= t('common.cancel') ?>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Delete Confirmation Modal -->
 <?php if ($_SESSION['user_group'] === 'Admin'): ?>
 <div id="deleteModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
@@ -1175,6 +1238,32 @@ function closeRemoveAttachmentModal() {
     if (modal) {
         modal.classList.add('hidden');
     }
+}
+
+// Print options modal functions
+function openPrintOptionsModal() {
+    const modal = document.getElementById('printOptionsModal');
+    if (modal) {
+        modal.classList.remove('hidden');
+    }
+}
+
+function closePrintOptionsModal() {
+    const modal = document.getElementById('printOptionsModal');
+    if (modal) {
+        modal.classList.add('hidden');
+    }
+}
+
+function submitPrintOptions() {
+    const withDisclaimer = document.getElementById('print_without_disclaimer');
+    const params = new URLSearchParams();
+    params.set('disclaimer', withDisclaimer && withDisclaimer.checked ? '0' : '1');
+    params.set('customer_signature', document.getElementById('print_customer_signature_option').checked ? '1' : '0');
+    params.set('technician_signature', document.getElementById('print_technician_signature_option').checked ? '1' : '0');
+
+    closePrintOptionsModal();
+    window.location.href = <?= json_encode(BASE_URL . '/work-orders/print/' . $workOrder['id']) ?> + '?' + params.toString();
 }
 
 // Delete modal functions
