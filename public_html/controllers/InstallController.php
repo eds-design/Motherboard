@@ -367,6 +367,12 @@ class InstallController extends Controller {
                 'status' => extension_loaded('openssl'),
                 'name' => t('install.check.openssl')
             ],
+            'mbstring' => [
+                'required' => t('install.mbstring_required'),
+                'current' => extension_loaded('mbstring') ? t('install.available') : t('install.not_available'),
+                'status' => extension_loaded('mbstring'),
+                'name' => t('install.check.mbstring')
+            ],
             'mod_rewrite' => [
                 'required' => t('install.rewrite_required'),
                 'current' => $this->hasUrlRewriting() ? t('install.available') : t('install.not_available'),
