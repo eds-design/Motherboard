@@ -330,7 +330,10 @@
                     <a href="<?= BASE_URL ?>/work-orders" class="block py-2 text-gray-600 hover:text-gray-900 md:inline-flex md:py-2 md:px-4"><?= t('nav.work_orders') ?></a>
                     <?php if ($_SESSION['user_group'] === 'Admin'): ?>
                         <a href="<?= BASE_URL ?>/customers" class="block py-2 text-gray-600 hover:text-gray-900 md:inline-flex md:py-2 md:px-4"><?= t('nav.customers') ?></a>
-                        <?php Hooks::doAction('layout.nav.after_customers'); ?>
+                    <?php endif; ?>
+                    <?php // Placement anchor only: each module decides which groups see its link. ?>
+                    <?php Hooks::doAction('layout.nav.after_customers'); ?>
+                    <?php if ($_SESSION['user_group'] === 'Admin'): ?>
                         <a href="<?= BASE_URL ?>/settings" class="block py-2 text-gray-600 hover:text-gray-900 md:inline-flex md:py-2 md:px-4"><?= t('nav.settings') ?></a>
                     <?php endif; ?>
                     <?php Hooks::doAction('layout.nav'); ?>
@@ -394,9 +397,11 @@
             }
             if ($_SESSION['user_group'] === 'Admin') {
                 $navShortcuts[] = ['key' => 'C', 'label' => t('nav.customers'), 'url' => BASE_URL . '/customers'];
-                if (ModuleLoader::instance()?->isEnabled('inventory')) {
-                    $navShortcuts[] = ['key' => 'I', 'label' => t('nav.inventory'), 'url' => BASE_URL . '/inventory'];
-                }
+            }
+            if ($_SESSION['user_group'] !== 'Limited' && ModuleLoader::instance()?->isEnabled('inventory')) {
+                $navShortcuts[] = ['key' => 'I', 'label' => t('nav.inventory'), 'url' => BASE_URL . '/inventory'];
+            }
+            if ($_SESSION['user_group'] === 'Admin') {
                 $navShortcuts[] = ['key' => 'S', 'label' => t('nav.settings'), 'url' => BASE_URL . '/settings'];
             }
             $navShortcuts[] = ['key' => 'L', 'label' => t('nav.logout'), 'url' => BASE_URL . '/logout'];

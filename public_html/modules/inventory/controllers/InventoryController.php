@@ -19,7 +19,7 @@ class InventoryController extends Controller {
     }
 
     public function index() {
-        $this->requireAdmin();
+        $this->requireTechnician();
 
         $search = $_GET['search'] ?? '';
         $categoryId = isset($_GET['category']) && $_GET['category'] !== '' ? (int) $_GET['category'] : null;
@@ -48,7 +48,7 @@ class InventoryController extends Controller {
     }
 
     public function createCategory() {
-        $this->requireAdmin();
+        $this->requireTechnician();
         $this->requirePost();
         try {
             $this->validateCSRF();
@@ -62,7 +62,7 @@ class InventoryController extends Controller {
     }
 
     public function updateCategory($id) {
-        $this->requireAdmin();
+        $this->requireTechnician();
         $this->requirePost();
         try {
             $this->validateCSRF();
@@ -81,7 +81,7 @@ class InventoryController extends Controller {
     }
 
     public function deleteCategory($id) {
-        $this->requireAdmin();
+        $this->requireTechnician();
         $this->requirePost();
         try {
             $this->validateCSRF();
@@ -99,7 +99,7 @@ class InventoryController extends Controller {
     }
 
     public function createProduct() {
-        $this->requireAdmin();
+        $this->requireTechnician();
         $this->requirePost();
         try {
             $this->validateCSRF();
@@ -113,7 +113,7 @@ class InventoryController extends Controller {
     }
 
     public function updateProduct($id) {
-        $this->requireAdmin();
+        $this->requireTechnician();
         $this->requirePost();
         try {
             $this->validateCSRF();
@@ -132,7 +132,7 @@ class InventoryController extends Controller {
     }
 
     public function deleteProduct($id) {
-        $this->requireAdmin();
+        $this->requireTechnician();
         $this->requirePost();
         try {
             $this->validateCSRF();

@@ -42,6 +42,10 @@ Hooks::addAction('router.register', function (Router $router) use ($inventoryCon
 });
 
 Hooks::addAction('layout.nav.after_customers', function (): void {
+    // Admins and technicians manage stock; Limited users only see it on work orders.
+    if (!in_array($_SESSION['user_group'] ?? '', ['Admin', 'Technician'], true)) {
+        return;
+    }
     echo '<a href="' . htmlspecialchars(BASE_URL . '/inventory') . '" class="block py-2 text-gray-600 hover:text-gray-900 md:inline-flex md:py-2 md:px-4">'
         . htmlspecialchars(t('nav.inventory'))
         . '</a>';
