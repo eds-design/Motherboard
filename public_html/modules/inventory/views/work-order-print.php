@@ -3,6 +3,7 @@ $assigned = $assigned ?? [];
 $totals = motherboard_inventory_work_order_totals($assigned);
 $sectionClass = $context['section_class'] ?? 'border border-gray-300 rounded-lg p-3 mb-4';
 $hideHeading = motherboard_inventory_hide_printout_heading();
+$hideSubtotals = motherboard_inventory_hide_subtotals();
 ?>
 <div class="<?= $sectionClass ?> print-avoid-break">
     <?php if (!$hideHeading): ?>
@@ -36,9 +37,11 @@ $hideHeading = motherboard_inventory_hide_printout_heading();
         </tbody>
     </table>
     <div class="mt-2 text-xs text-gray-700 text-right space-y-0.5">
-        <div><?= t('inventory.taxable_total') ?>: <?= htmlspecialchars(motherboard_inventory_format_money($totals['taxable'])) ?></div>
-        <div><?= t('inventory.nontaxable_total') ?>: <?= htmlspecialchars(motherboard_inventory_format_money($totals['nontaxable'])) ?></div>
-        <div><?= t('inventory.tax_amount', ['rate' => motherboard_inventory_format_tax_rate($totals['tax_rate'])]) ?>: <?= htmlspecialchars(motherboard_inventory_format_money($totals['tax'])) ?></div>
+        <?php if (!$hideSubtotals): ?>
+            <div><?= t('inventory.taxable_total') ?>: <?= htmlspecialchars(motherboard_inventory_format_money($totals['taxable'])) ?></div>
+            <div><?= t('inventory.nontaxable_total') ?>: <?= htmlspecialchars(motherboard_inventory_format_money($totals['nontaxable'])) ?></div>
+            <div><?= t('inventory.tax_amount', ['rate' => motherboard_inventory_format_tax_rate($totals['tax_rate'])]) ?>: <?= htmlspecialchars(motherboard_inventory_format_money($totals['tax'])) ?></div>
+        <?php endif; ?>
         <div class="font-semibold"><?= t('inventory.grand_total') ?>: <?= htmlspecialchars(motherboard_inventory_format_money($totals['grand_total'])) ?></div>
     </div>
 </div>

@@ -68,6 +68,11 @@ function motherboard_inventory_hide_printout_heading(?Settings $settings = null)
     return $settings->getSetting('inventory_hide_printout_heading', '0') === '1';
 }
 
+function motherboard_inventory_hide_subtotals(?Settings $settings = null): bool {
+    $settings = $settings ?: new Settings();
+    return $settings->getSetting('inventory_hide_subtotals', '0') === '1';
+}
+
 function motherboard_inventory_work_order_totals(array $assigned, ?float $taxRate = null): array {
     $taxRate = $taxRate ?? motherboard_inventory_tax_rate();
     $taxableTotal = 0.0;
