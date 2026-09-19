@@ -541,6 +541,8 @@ return [
     'settings.phone_format_default' => 'По подразбиране (минимум 7 цифри)',
     'settings.phone_format_a' => 'Формат за САЩ A: (555) 555-5555',
     'settings.phone_format_b' => 'Формат за САЩ B: 555-555-5555',
+    'settings.currency' => 'Валута',
+    'settings.currency_help' => 'Символ или текст, показван до цените, например $, €, £ или USD',
     'settings.phone_format_help' => 'Определя форматирането и проверката на телефонните номера в системата',
     'settings.example' => 'Пример',
     'settings.pattern' => 'Шаблон',
