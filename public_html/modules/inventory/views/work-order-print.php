@@ -19,7 +19,7 @@ $hideHeading = motherboard_inventory_hide_printout_heading();
         </thead>
         <tbody>
             <?php foreach ($assigned as $line): ?>
-                <tr>
+                <tr class="border-t border-gray-200">
                     <td class="py-1">
                         <span class="font-medium text-gray-900"><?= htmlspecialchars($line['product_name']) ?></span>
                         <?php if (!empty($line['is_custom']) && !empty($line['description'])): ?>
