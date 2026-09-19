@@ -5,32 +5,66 @@ require_once ROOT_PATH . '/core/EmailSender.php';
 
 define('MOTHERBOARD_2FA_COOKIE', 'mb_trusted_device');
 define('MOTHERBOARD_2FA_TRUST_DAYS', 30);
+// Shared workstations are normal (a front counter, a shop floor PC), so the cookie
+// carries a set of users rather than one. Capped so it cannot grow without bound.
+define('MOTHERBOARD_2FA_MAX_TRUSTED_USERS', 10);
 
 /**
- * Signed marker proving this browser previously completed a second factor for this user.
+ * Signed marker proving this browser previously completed a second factor.
  *
  * Replaces the previous "have we seen this IP in 30 days" test, which trusted a property
  * of the network rather than the browser: anyone sharing the victim's NAT egress address
  * (an office, a VPN, carrier-grade NAT) skipped 2FA entirely with just the password.
  */
-function motherboard_2fa_device_token(int $userId, int $expires): string {
-    $payload = $userId . '|' . $expires;
-    return $payload . '|' . hash_hmac('sha256', $payload, APP_ENCRYPTION_KEY);
+function motherboard_2fa_sign(string $payload): string {
+    return hash_hmac('sha256', $payload, APP_ENCRYPTION_KEY);
+}
+
+/**
+ * The still-valid trust entries in this browser's cookie, as [userId => expiry].
+ * Returns an empty set if the signature does not verify.
+ */
+function motherboard_2fa_trusted_users(): array {
+    $raw = $_COOKIE[MOTHERBOARD_2FA_COOKIE] ?? '';
+    if (!is_string($raw) || substr_count($raw, '|') !== 2) {
+        return [];
+    }
+
+    $parts = explode('|', $raw);
+    $trusted = [];
+
+    if ($parts[0] === 'v2') {
+        [, $list, $signature] = $parts;
+        if (!hash_equals(motherboard_2fa_sign($list), $signature)) {
+            return [];
+        }
+        foreach (explode(',', $list) as $entry) {
+            if (substr_count($entry, ':') !== 1) {
+                continue;
+            }
+            [$userId, $expires] = explode(':', $entry);
+            if ((int) $userId > 0) {
+                $trusted[(int) $userId] = (int) $expires;
+            }
+        }
+    } else {
+        // Single-user cookie issued before shared devices were supported. Honour it
+        // so nobody is re-challenged by the upgrade; it is rewritten on next trust.
+        [$userId, $expires, $signature] = $parts;
+        if (!hash_equals(motherboard_2fa_sign($userId . '|' . $expires), $signature)) {
+            return [];
+        }
+        if ((int) $userId > 0) {
+            $trusted[(int) $userId] = (int) $expires;
+        }
+    }
+
+    $now = time();
+    return array_filter($trusted, static fn(int $expires): bool => $expires > $now);
 }
 
 function motherboard_2fa_device_is_trusted(int $userId): bool {
-    $raw = $_COOKIE[MOTHERBOARD_2FA_COOKIE] ?? '';
-    if (!is_string($raw) || substr_count($raw, '|') !== 2) {
-        return false;
-    }
-
-    [$cookieUser, $expires, $signature] = explode('|', $raw);
-    if ((int) $cookieUser !== $userId || (int) $expires < time()) {
-        return false;
-    }
-
-    $expected = motherboard_2fa_device_token((int) $cookieUser, (int) $expires);
-    return hash_equals($expected, $raw);
+    return isset(motherboard_2fa_trusted_users()[$userId]);
 }
 
 function motherboard_2fa_trust_device(int $userId): void {
@@ -38,10 +72,23 @@ function motherboard_2fa_trust_device(int $userId): void {
         return;
     }
 
-    $expires = time() + (MOTHERBOARD_2FA_TRUST_DAYS * 86400);
+    $trusted = motherboard_2fa_trusted_users();
+    $trusted[$userId] = time() + (MOTHERBOARD_2FA_TRUST_DAYS * 86400);
+
+    // Trim the least recently trusted accounts first, so the person using the
+    // machine today is never the one evicted.
+    arsort($trusted);
+    $trusted = array_slice($trusted, 0, MOTHERBOARD_2FA_MAX_TRUSTED_USERS, true);
+
+    $entries = [];
+    foreach ($trusted as $id => $expires) {
+        $entries[] = $id . ':' . $expires;
+    }
+    $list = implode(',', $entries);
+
     $params = session_get_cookie_params();
-    setcookie(MOTHERBOARD_2FA_COOKIE, motherboard_2fa_device_token($userId, $expires), [
-        'expires' => $expires,
+    setcookie(MOTHERBOARD_2FA_COOKIE, 'v2|' . $list . '|' . motherboard_2fa_sign($list), [
+        'expires' => max($trusted),
         'path' => '/',
         'domain' => $params['domain'] ?? '',
         'secure' => (bool) ($params['secure'] ?? false),
