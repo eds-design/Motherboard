@@ -155,6 +155,7 @@ class Schema {
             'print_technician_signature' => '1',
             'print_hide_notes' => '0',
             'print_hide_attachments' => '0',
+            'print_condensed' => '0',
         ];
 
         $stmt = $pdo->prepare(

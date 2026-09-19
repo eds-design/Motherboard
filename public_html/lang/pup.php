@@ -491,6 +491,7 @@ return [
     'settings.print_technician_signature' => 'Put Tech Paw on paw prints',
     'settings.print_hide_notes' => 'Hide Sniff Notes from paw prints',
     'settings.print_hide_attachments' => 'Hide Fetched Things from paw prints',
+    'settings.print_condensed' => 'Condensed Paw Print Style',
     'settings.security_help' => 'Guard-dog options',
     'settings.force_2fa_help' => 'On: two-snout every wag-in. Off: two-snout only from a new yard.',
     'settings.session_timeout' => 'Nap timeout (minutes)',

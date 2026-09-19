@@ -271,6 +271,7 @@ class InstallController extends Controller {
             'print_technician_signature' => '1',
             'print_hide_notes' => '0',
             'print_hide_attachments' => '0',
+            'print_condensed' => '0',
             'captcha_provider' => 'off',
             'turnstile_site_key' => '',
             'turnstile_secret_key' => '',

@@ -46,6 +46,7 @@ class SettingsController extends Controller {
                         'print_technician_signature' => isset($_POST['print_technician_signature']) ? '1' : '0',
                         'print_hide_notes' => isset($_POST['print_hide_notes']) ? '1' : '0',
                         'print_hide_attachments' => isset($_POST['print_hide_attachments']) ? '1' : '0',
+                        'print_condensed' => isset($_POST['print_condensed']) ? '1' : '0',
                     ];
                     $this->settingsModel->updateCompanyInfo($printoutData);
                     $this->logger->log('settings_updated', 'Printout settings updated', $_SESSION['user_id']);

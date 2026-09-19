@@ -1,6 +1,10 @@
 <?php 
 $title = t('wo.work_order_label', ['id' => $workOrder['id']]) . ' - ' . ($companyName ?? APP_NAME);
 $hideNavigation = true;
+$condensed = !empty($companyInfo['print_condensed']);
+$boxClass = $condensed ? 'p-1 mb-2' : 'border border-gray-300 rounded-lg p-3 mb-4';
+$rowGap = $condensed ? 'mb-2' : 'mb-4';
+$divider = $condensed ? 'pt-1 mt-2' : 'border-t border-gray-300 pt-3 mt-4';
 ?>
 <!DOCTYPE html>
 <html lang="<?= htmlspecialchars(I18n::getInstance()->getLocale()) ?>">
@@ -35,7 +39,7 @@ $hideNavigation = true;
         </div>
 
         <!-- Row 1: Company Information (Left) | Work Order Number & Date (Right) -->
-        <div class="grid grid-cols-2 gap-4 mb-4 print-avoid-break">
+        <div class="grid grid-cols-2 gap-4 <?= $rowGap ?> print-avoid-break">
             <!-- Company Information -->
             <div class="text-left">
                 <?php if (!empty($companyLogoUrl)): ?>
@@ -69,9 +73,9 @@ $hideNavigation = true;
         </div>
 
         <!-- Row 2: Customer Information (Left) | Device Information & Accessories (Right) -->
-        <div class="grid grid-cols-2 gap-4 mb-4 print-avoid-break">
+        <div class="grid grid-cols-2 gap-4 <?= $rowGap ?> print-avoid-break">
             <!-- Customer Information -->
-            <div class="border border-gray-300 rounded-lg p-3">
+            <div class="<?= $condensed ? 'p-1' : 'border border-gray-300 rounded-lg p-3' ?>">
                 <h3 class="text-sm font-semibold text-gray-900 mb-2"><?= t('wo.customer_info') ?></h3>
                 <div class="space-y-1">
                     <p class="text-xs"><strong><?= t('wo.name') ?>:</strong> <?= htmlspecialchars($workOrder['customer_name']) ?></p>
@@ -86,7 +90,7 @@ $hideNavigation = true;
             </div>
 
             <!-- Device Information & Accessories -->
-            <div class="border border-gray-300 rounded-lg p-3">
+            <div class="<?= $condensed ? 'p-1' : 'border border-gray-300 rounded-lg p-3' ?>">
                 <h3 class="text-sm font-semibold text-gray-900 mb-2"><?= t('wo.device_info') ?></h3>
                 <div class="space-y-1">
                     <p class="text-xs"><strong><?= t('wo.computer') ?>:</strong> <?= htmlspecialchars($workOrder['computer'] ?? t('wo.na')) ?></p>
@@ -131,21 +135,21 @@ $hideNavigation = true;
         </div>
 
         <!-- Row 3: Problem Description (Full Width) -->
-        <div class="border border-gray-300 rounded-lg p-3 mb-4 print-avoid-break">
+        <div class="<?= $boxClass ?> print-avoid-break">
             <h3 class="text-sm font-semibold text-gray-900 mb-2"><?= t('wo.problem') ?></h3>
             <p class="text-xs text-gray-700 whitespace-pre-wrap"><?= htmlspecialchars($workOrder['description']) ?></p>
             <?php Hooks::doAction('work_order.description.after', $workOrder ?? [], 'print'); ?>
         </div>
 
         <?php if (!empty($workOrder['resolution'])): ?>
-            <div class="border border-gray-300 rounded-lg p-3 mb-4 print-avoid-break">
+            <div class="<?= $boxClass ?> print-avoid-break">
                 <h3 class="text-sm font-semibold text-gray-900 mb-2"><?= t('wo.resolution') ?></h3>
                 <p class="text-xs text-gray-700 whitespace-pre-wrap"><?= htmlspecialchars($workOrder['resolution']) ?></p>
             </div>
         <?php endif; ?>
 
         <?php if (!empty($workOrder['notes']) && empty($companyInfo['print_hide_notes'])): ?>
-            <div class="border border-gray-300 rounded-lg p-3 mb-4 print-avoid-break">
+            <div class="<?= $boxClass ?> print-avoid-break">
                 <h3 class="text-sm font-semibold text-gray-900 mb-2"><?= t('wo.notes') ?></h3>
                 <p class="text-xs text-gray-700 whitespace-pre-wrap"><?= htmlspecialchars($workOrder['notes']) ?></p>
             </div>
@@ -154,7 +158,7 @@ $hideNavigation = true;
         <?php Hooks::doAction('work_order.print.before_attachments', $workOrder ?? []); ?>
 
         <?php if (!empty($attachments) && empty($companyInfo['print_hide_attachments'])): ?>
-            <div class="border border-gray-300 rounded-lg p-3 mb-4 print-avoid-break">
+            <div class="<?= $boxClass ?> print-avoid-break">
                 <h3 class="text-sm font-semibold text-gray-900 mb-2"><?= t('wo.attachments') ?></h3>
                 <ul class="space-y-1">
                     <?php foreach ($attachments as $attachment): ?>
@@ -171,7 +175,7 @@ $hideNavigation = true;
 
         <!-- Row 4: Disclaimer (Full Width) -->
         <?php if (!empty($companyInfo['work_order_disclaimer'])): ?>
-            <div class="border-t border-gray-300 pt-3 mt-4 print-avoid-break">
+            <div class="<?= $divider ?> print-avoid-break">
                 <h3 class="text-xs font-semibold text-gray-900 mb-2"><?= t('wo.terms') ?></h3>
                 <div class="text-xs text-gray-600 leading-tight">
                     <?= Controller::safeBasicHtml($companyInfo['work_order_disclaimer']) ?>
@@ -184,7 +188,7 @@ $hideNavigation = true;
             $showTechnicianSignature = !empty($companyInfo['print_technician_signature']);
         ?>
         <?php if ($showCustomerSignature || $showTechnicianSignature): ?>
-        <div class="border-t border-gray-300 pt-3 mt-4">
+        <div class="<?= $divider ?>">
             <div class="grid grid-cols-2 gap-8">
                 <?php if ($showCustomerSignature): ?>
                 <div>
