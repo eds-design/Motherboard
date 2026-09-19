@@ -169,7 +169,7 @@ class InventoryController extends Controller {
             'id' => (int) $product['id'],
             'name' => $product['name'],
             'item_number' => $product['item_number'],
-            'price' => motherboard_inventory_format_price($product['price']),
+            'price' => motherboard_inventory_format_money($product['price']),
             'stock' => motherboard_inventory_format_stock($product['stock']),
         ], $products));
     }

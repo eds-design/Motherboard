@@ -58,12 +58,12 @@ $totals = motherboard_inventory_work_order_totals($assigned);
                                         <?php endif; ?>
                                     </td>
                                     <td class="px-2 py-3 text-sm text-gray-900">
-                                        <?= htmlspecialchars(motherboard_inventory_format_price($line['unit_price'])) ?>
+                                        <?= htmlspecialchars(motherboard_inventory_format_money($line['unit_price'])) ?>
                                         <?php if (!empty($line['taxable'])): ?>
                                             <span class="ml-1 text-xs font-medium text-gray-500" title="<?= htmlspecialchars(t('inventory.taxable')) ?>"><?= t('inventory.taxable_mark') ?></span>
                                         <?php endif; ?>
                                     </td>
-                                    <td class="px-2 py-3 text-sm text-gray-900"><?= htmlspecialchars(motherboard_inventory_format_price($line['line_total'])) ?></td>
+                                    <td class="px-2 py-3 text-sm text-gray-900"><?= htmlspecialchars(motherboard_inventory_format_money($line['line_total'])) ?></td>
                                     <?php if ($canEdit): ?>
                                         <td class="px-2 py-3 text-right">
                                             <form method="POST" action="<?= BASE_URL ?>/work-orders/view/<?= $workOrderId ?>/products/<?= (int) $line['id'] ?>/delete" onsubmit="return confirm(<?= htmlspecialchars(json_encode(t('inventory.wo_confirm_remove')), ENT_QUOTES) ?>)">
@@ -78,10 +78,10 @@ $totals = motherboard_inventory_work_order_totals($assigned);
                     </table>
                 </div>
                 <div class="mt-4 text-sm text-gray-700 space-y-1 text-right">
-                    <div><?= t('inventory.taxable_total') ?>: <?= htmlspecialchars(motherboard_inventory_format_price($totals['taxable'])) ?></div>
-                    <div><?= t('inventory.nontaxable_total') ?>: <?= htmlspecialchars(motherboard_inventory_format_price($totals['nontaxable'])) ?></div>
-                    <div><?= t('inventory.tax_amount', ['rate' => motherboard_inventory_format_tax_rate($totals['tax_rate'])]) ?>: <?= htmlspecialchars(motherboard_inventory_format_price($totals['tax'])) ?></div>
-                    <div class="font-medium text-gray-900"><?= t('inventory.grand_total') ?>: <?= htmlspecialchars(motherboard_inventory_format_price($totals['grand_total'])) ?></div>
+                    <div><?= t('inventory.taxable_total') ?>: <?= htmlspecialchars(motherboard_inventory_format_money($totals['taxable'])) ?></div>
+                    <div><?= t('inventory.nontaxable_total') ?>: <?= htmlspecialchars(motherboard_inventory_format_money($totals['nontaxable'])) ?></div>
+                    <div><?= t('inventory.tax_amount', ['rate' => motherboard_inventory_format_tax_rate($totals['tax_rate'])]) ?>: <?= htmlspecialchars(motherboard_inventory_format_money($totals['tax'])) ?></div>
+                    <div class="font-medium text-gray-900"><?= t('inventory.grand_total') ?>: <?= htmlspecialchars(motherboard_inventory_format_money($totals['grand_total'])) ?></div>
                 </div>
             <?php endif; ?>
         </div>
@@ -128,7 +128,7 @@ $totals = motherboard_inventory_work_order_totals($assigned);
                                 <option value="<?= (int) $product['id'] ?>">
                                     <?= htmlspecialchars($product['name']) ?>
                                     (<?= htmlspecialchars($product['item_number']) ?>)
-                                    — <?= htmlspecialchars(motherboard_inventory_format_price($product['price'])) ?>
+                                    — <?= htmlspecialchars(motherboard_inventory_format_money($product['price'])) ?>
                                     — <?= t('inventory.stock') ?>: <?= htmlspecialchars(motherboard_inventory_format_stock($product['stock'])) ?>
                                     <?php if (!empty($product['on_work_order'])): ?>
                                         — <?= t('inventory.wo_already_added') ?>

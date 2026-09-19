@@ -15,7 +15,7 @@ $sectionClass = $context['section_class'] ?? 'border border-gray-300 rounded-lg 
                             <?= htmlspecialchars($line['item_number']) ?>:
                         <?php endif; ?>
                         <?= htmlspecialchars($line['product_name']) ?>,
-                        <?= htmlspecialchars(motherboard_inventory_format_price($line['unit_price'])) ?><?php if (!empty($line['taxable'])): ?><span title="<?= htmlspecialchars(t('inventory.taxable')) ?>"><?= t('inventory.taxable_mark') ?></span><?php endif; ?>
+                        <?= htmlspecialchars(motherboard_inventory_format_money($line['unit_price'])) ?><?php if (!empty($line['taxable'])): ?><span title="<?= htmlspecialchars(t('inventory.taxable')) ?>"><?= t('inventory.taxable_mark') ?></span><?php endif; ?>
                         <?= t('inventory.price_each') ?>
                     </span>
                     <?php if (!empty($line['is_custom']) && !empty($line['description'])): ?>
@@ -25,10 +25,10 @@ $sectionClass = $context['section_class'] ?? 'border border-gray-300 rounded-lg 
             <?php endforeach; ?>
         </div>
         <div class="text-xs text-gray-700 text-right space-y-0.5">
-            <div><?= t('inventory.taxable_total') ?>: <?= htmlspecialchars(motherboard_inventory_format_price($totals['taxable'])) ?></div>
-            <div><?= t('inventory.nontaxable_total') ?>: <?= htmlspecialchars(motherboard_inventory_format_price($totals['nontaxable'])) ?></div>
-            <div><?= t('inventory.tax_amount', ['rate' => motherboard_inventory_format_tax_rate($totals['tax_rate'])]) ?>: <?= htmlspecialchars(motherboard_inventory_format_price($totals['tax'])) ?></div>
-            <div class="font-semibold"><?= t('inventory.grand_total') ?>: <?= htmlspecialchars(motherboard_inventory_format_price($totals['grand_total'])) ?></div>
+            <div><?= t('inventory.taxable_total') ?>: <?= htmlspecialchars(motherboard_inventory_format_money($totals['taxable'])) ?></div>
+            <div><?= t('inventory.nontaxable_total') ?>: <?= htmlspecialchars(motherboard_inventory_format_money($totals['nontaxable'])) ?></div>
+            <div><?= t('inventory.tax_amount', ['rate' => motherboard_inventory_format_tax_rate($totals['tax_rate'])]) ?>: <?= htmlspecialchars(motherboard_inventory_format_money($totals['tax'])) ?></div>
+            <div class="font-semibold"><?= t('inventory.grand_total') ?>: <?= htmlspecialchars(motherboard_inventory_format_money($totals['grand_total'])) ?></div>
         </div>
     </div>
 </div>

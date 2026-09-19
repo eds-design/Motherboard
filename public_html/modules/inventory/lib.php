@@ -10,6 +10,29 @@ function motherboard_inventory_format_price($price): string {
     return number_format((float) $price, 2, '.', ',');
 }
 
+function motherboard_inventory_currency(?Settings $settings = null): string {
+    // Every amount on a page asks for this, and Settings hits the database on each
+    // read, so remember the symbol for the request once it has been looked up.
+    static $cached = null;
+    if ($settings !== null) {
+        return trim((string) $settings->getSetting('currency', '$'));
+    }
+    if ($cached === null) {
+        $cached = motherboard_inventory_currency(new Settings());
+    }
+    return $cached;
+}
+
+function motherboard_inventory_format_money($amount, ?Settings $settings = null): string {
+    $currency = motherboard_inventory_currency($settings);
+    if ($currency === '') {
+        return motherboard_inventory_format_price($amount);
+    }
+    // Word-like currencies ("USD") need the space that symbols ("$", "€") do not.
+    $separator = preg_match('/[\p{L}\p{N}]$/u', $currency) ? ' ' : '';
+    return $currency . $separator . motherboard_inventory_format_price($amount);
+}
+
 function motherboard_inventory_format_tax_rate($rate): string {
     $formatted = rtrim(rtrim(number_format((float) $rate, 4, '.', ''), '0'), '.');
     return $formatted === '' ? '0' : $formatted;
