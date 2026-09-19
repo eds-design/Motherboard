@@ -50,6 +50,8 @@ return [
     'inventory.tax_rate_help' => 'How much extra the tax-sniffer takes from tax-sniffed chew-toys on a woof order. Example: 8.25 for 8.25%.',
     'inventory.show_on_printout' => 'Show on paw-print',
     'inventory.show_on_printout_help' => 'Uncheck to hide the treat stash from the paper woof order.',
+    'inventory.hide_printout_heading' => 'Hide the stash label on paw-prints',
+    'inventory.hide_printout_heading_help' => 'Check to keep the “Treat Stash” label off the paper woof order, snacks only.',
     'inventory.tax_amount' => 'Tax sniff ({rate}%)',
     'inventory.invalid_tax_rate' => 'Tax sniff rate must be between 0 and 100.',
     'inventory.grand_total' => 'Whole stash',

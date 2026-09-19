@@ -2,6 +2,7 @@
 $title = t('module.inventory.name') . ' - ' . ($companyName ?? APP_NAME);
 $taxRate = motherboard_inventory_format_tax_rate($settings['inventory_tax_rate'] ?? '0');
 $showOnPrintout = ($settings['inventory_show_on_printout'] ?? '1') !== '0';
+$hidePrintoutHeading = ($settings['inventory_hide_printout_heading'] ?? '0') === '1';
 ob_start();
 ?>
 
@@ -45,6 +46,13 @@ ob_start();
                 <div class="ml-2">
                     <label for="inventory_show_on_printout" class="block text-sm text-gray-700"><?= t('inventory.show_on_printout') ?></label>
                     <p class="mt-1 text-sm text-gray-500"><?= t('inventory.show_on_printout_help') ?></p>
+                </div>
+            </div>
+            <div class="flex items-start">
+                <input id="inventory_hide_printout_heading" name="inventory_hide_printout_heading" type="checkbox" value="1" <?= $hidePrintoutHeading ? 'checked' : '' ?> class="h-4 w-4 mt-0.5 text-primary-600 focus:ring-primary-500 border-gray-300 rounded">
+                <div class="ml-2">
+                    <label for="inventory_hide_printout_heading" class="block text-sm text-gray-700"><?= t('inventory.hide_printout_heading') ?></label>
+                    <p class="mt-1 text-sm text-gray-500"><?= t('inventory.hide_printout_heading_help') ?></p>
                 </div>
             </div>
             <div class="flex justify-end">

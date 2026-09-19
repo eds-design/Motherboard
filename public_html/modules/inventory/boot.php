@@ -86,5 +86,6 @@ Hooks::addFilter('module.settings.save.inventory', function (array $result, arra
     }
     $settings->setSetting('inventory_tax_rate', motherboard_inventory_format_tax_rate($rate));
     $settings->setSetting('inventory_show_on_printout', isset($post['inventory_show_on_printout']) ? '1' : '0');
+    $settings->setSetting('inventory_hide_printout_heading', isset($post['inventory_hide_printout_heading']) ? '1' : '0');
     return $result;
 });

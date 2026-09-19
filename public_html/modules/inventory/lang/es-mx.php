@@ -50,6 +50,8 @@ return [
     'inventory.tax_rate_help' => 'Porcentaje aplicado a los productos gravables en las órdenes de trabajo. Ejemplo: 8.25 para 8.25 %.',
     'inventory.show_on_printout' => 'Mostrar en la impresión',
     'inventory.show_on_printout_help' => 'Si se desmarca, la sección de inventario no se incluye en las órdenes impresas.',
+    'inventory.hide_printout_heading' => 'Ocultar el título de inventario en la impresión',
+    'inventory.hide_printout_heading_help' => 'Si se marca, el título «Inventario» no se muestra arriba de los artículos de inventario en las órdenes impresas.',
     'inventory.tax_amount' => 'Impuesto ({rate} %)',
     'inventory.invalid_tax_rate' => 'Ingresa una tasa de impuesto entre 0 y 100.',
     'inventory.grand_total' => 'Total',

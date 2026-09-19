@@ -50,6 +50,8 @@ return [
     'inventory.tax_rate_help' => 'Prozentsatz, der auf steuerpflichtige Produkte in Arbeitsaufträgen angewendet wird. Beispiel: 8,25 für 8,25 %.',
     'inventory.show_on_printout' => 'Auf Ausdruck anzeigen',
     'inventory.show_on_printout_help' => 'Wenn deaktiviert, wird der Inventarabschnitt auf gedruckten Arbeitsaufträgen weggelassen.',
+    'inventory.hide_printout_heading' => 'Inventar-Überschrift auf Ausdruck ausblenden',
+    'inventory.hide_printout_heading_help' => 'Wenn aktiviert, wird die Überschrift „Inventar“ über den Inventarposten auf gedruckten Arbeitsaufträgen weggelassen.',
     'inventory.tax_amount' => 'Steuer ({rate} %)',
     'inventory.invalid_tax_rate' => 'Geben Sie einen Steuersatz zwischen 0 und 100 ein.',
     'inventory.grand_total' => 'Gesamt',

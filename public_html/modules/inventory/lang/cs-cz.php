@@ -50,6 +50,8 @@ return [
     'inventory.tax_rate_help' => 'Procento uplatněné na zdanitelné produkty na zakázkách. Příklad: 8,25 pro 8,25 %.',
     'inventory.show_on_printout' => 'Zobrazit na výtisku',
     'inventory.show_on_printout_help' => 'Pokud je možnost vypnutá, sekce skladu se na vytištěných zakázkách nezobrazí.',
+    'inventory.hide_printout_heading' => 'Skrýt nadpis skladu na výtisku',
+    'inventory.hide_printout_heading_help' => 'Pokud je možnost zapnutá, nadpis „Sklad“ se nad skladovými položkami na vytištěných zakázkách nezobrazí.',
     'inventory.tax_amount' => 'Daň ({rate} %)',
     'inventory.invalid_tax_rate' => 'Zadejte sazbu daně mezi 0 a 100.',
     'inventory.grand_total' => 'Celkem',

@@ -50,6 +50,8 @@ return [
     'inventory.tax_rate_help' => 'Percentage applied to taxable products on work orders. Example: 8.25 for 8.25%.',
     'inventory.show_on_printout' => 'Show on printout',
     'inventory.show_on_printout_help' => 'When unchecked, the inventory section is omitted from printed work orders.',
+    'inventory.hide_printout_heading' => 'Hide inventory heading on printout',
+    'inventory.hide_printout_heading_help' => 'When checked, the "Inventory" heading is omitted above the inventory items on printed work orders.',
     'inventory.tax_amount' => 'Tax ({rate}%)',
     'inventory.invalid_tax_rate' => 'Enter a tax rate between 0 and 100.',
     'inventory.grand_total' => 'Total',
