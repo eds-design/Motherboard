@@ -1,8 +1,9 @@
 <?php
 $assigned = $assigned ?? [];
 $totals = motherboard_inventory_work_order_totals($assigned);
+$sectionClass = $context['section_class'] ?? 'border border-gray-300 rounded-lg p-3 mb-4';
 ?>
-<div class="border border-gray-300 rounded-lg p-3 mb-4 print-avoid-break">
+<div class="<?= $sectionClass ?> print-avoid-break">
     <h3 class="text-sm font-semibold text-gray-900 mb-2"><?= t('inventory.wo_section') ?></h3>
     <div class="grid grid-cols-2 gap-4">
         <div class="text-xs text-gray-700 space-y-1">

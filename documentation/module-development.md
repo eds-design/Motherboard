@@ -303,7 +303,10 @@ Output HTML with `echo` or `include`.
 
 **When:** Printable work order, immediately before the Attachments list.
 
-**Arguments:** `array $workOrder`
+**Arguments:** `array $workOrder`, `array $context`  
+`$context` includes `condensed` (bool, the Condensed Printout Style setting) and
+`section_class` (string). Wrap printed sections in `section_class` so they match the
+surrounding printout in both styles.
 
 ---
 

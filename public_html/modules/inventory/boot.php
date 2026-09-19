@@ -60,7 +60,7 @@ Hooks::addAction('work_order.view.before_attachments', function (array $workOrde
     include $inventoryPath . '/views/work-order-section.php';
 });
 
-Hooks::addAction('work_order.print.before_attachments', function (array $workOrder) use ($inventoryPath): void {
+Hooks::addAction('work_order.print.before_attachments', function (array $workOrder, array $context = []) use ($inventoryPath): void {
     if (empty($workOrder['id']) || !motherboard_inventory_show_on_printout()) {
         return;
     }

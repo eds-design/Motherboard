@@ -155,7 +155,7 @@ $divider = $condensed ? 'pt-1 mt-2' : 'border-t border-gray-300 pt-3 mt-4';
             </div>
         <?php endif; ?>
 
-        <?php Hooks::doAction('work_order.print.before_attachments', $workOrder ?? []); ?>
+        <?php Hooks::doAction('work_order.print.before_attachments', $workOrder ?? [], ['condensed' => $condensed, 'section_class' => $boxClass]); ?>
 
         <?php if (!empty($attachments) && empty($companyInfo['print_hide_attachments'])): ?>
             <div class="<?= $boxClass ?> print-avoid-break">
