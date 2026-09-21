@@ -1,0 +1,423 @@
+:root {
+    color-scheme: light;
+}
+
+.eds-warranty-document-stage,
+.eds-warranty-document-stage * {
+    box-sizing: border-box;
+}
+
+.eds-warranty-document-stage {
+    margin: 0;
+    padding: 12mm;
+    background: #e5e7eb;
+}
+
+.eds-warranty-document-set {
+    --eds-warranty-page-scale: 1;
+    width: 100%;
+}
+
+.eds-warranty-pages {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12mm;
+    width: 100%;
+}
+
+.eds-warranty-page-shell {
+    width: calc(210mm * var(--eds-warranty-page-scale));
+    height: calc(297mm * var(--eds-warranty-page-scale));
+    flex: 0 0 auto;
+}
+
+.eds-warranty-document {
+    background: #fff;
+    color: #111;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10pt;
+    line-height: 1.38;
+    overflow-wrap: normal;
+    word-break: normal;
+}
+
+.eds-warranty-document-source {
+    width: min(210mm, 100%);
+    min-height: 297mm;
+    margin: 0 auto;
+    padding: 13mm;
+    box-shadow: 0 1mm 4mm rgba(0, 0, 0, .14);
+}
+
+.eds-warranty-page {
+    width: 210mm;
+    height: 297mm;
+    margin: 0;
+    padding: 13mm;
+    overflow: hidden;
+    box-shadow: 0 1mm 4mm rgba(0, 0, 0, .14);
+    transform: scale(var(--eds-warranty-page-scale));
+    transform-origin: top left;
+}
+
+.eds-warranty-page__content {
+    width: 100%;
+    height: 100%;
+}
+
+.eds-warranty-document p,
+.eds-warranty-document h1,
+.eds-warranty-document h2,
+.eds-warranty-document ul,
+.eds-warranty-document ol {
+    margin-top: 0;
+}
+
+.eds-warranty-header {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10mm;
+    align-items: start;
+    min-height: 18mm;
+}
+
+.eds-warranty-header__brand,
+.eds-warranty-header__service {
+    min-width: 0;
+}
+
+.eds-warranty-header__service {
+    text-align: right;
+}
+
+.eds-warranty-header__brand p,
+.eds-warranty-header__service p {
+    margin-bottom: 1mm;
+}
+
+.eds-warranty-header__website,
+.eds-warranty-header__service,
+.eds-warranty-party,
+.eds-warranty-items th,
+.eds-warranty-items td,
+.eds-warranty-signature {
+    overflow-wrap: anywhere;
+    word-break: normal;
+}
+
+.eds-warranty-logo {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 62mm;
+    max-height: 20mm;
+    margin: 0 0 2mm;
+    object-fit: contain;
+    object-position: left center;
+}
+
+.eds-warranty-header__website {
+    color: #333;
+    font-size: 9pt;
+}
+
+.eds-warranty-service-name {
+    font-size: 14pt;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.eds-warranty-rule {
+    width: 100%;
+    margin: 5mm 0 7mm;
+    border-top: .5mm solid #111;
+}
+
+.eds-warranty-title-block {
+    margin-bottom: 7mm;
+    text-align: center;
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
+.eds-warranty-title-block h1 {
+    margin-bottom: 3mm;
+    font-size: 19pt;
+    line-height: 1.15;
+    letter-spacing: .04em;
+}
+
+.eds-warranty-meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 3mm 14mm;
+    font-size: 11pt;
+    font-weight: 700;
+}
+
+.eds-warranty-parties {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7mm;
+    margin-bottom: 8mm;
+}
+
+.eds-warranty-party {
+    min-width: 0;
+    padding: 4mm;
+    border: .3mm solid #777;
+}
+
+.eds-warranty-party h2,
+.eds-warranty-terms__title {
+    margin-bottom: 3mm;
+    padding-bottom: 1.5mm;
+    border-bottom: .3mm solid #333;
+    font-size: 12pt;
+    line-height: 1.2;
+}
+
+.eds-warranty-party p {
+    margin-bottom: 1.2mm;
+}
+
+.eds-warranty-party p:last-child {
+    margin-bottom: 0;
+}
+
+.eds-warranty-issuer-name {
+    font-weight: 700;
+}
+
+.eds-warranty-party p > span:first-child {
+    font-weight: 700;
+}
+
+.eds-warranty-pre-line {
+    white-space: pre-line;
+}
+
+.eds-warranty-items {
+    margin-bottom: 8mm;
+}
+
+.eds-warranty-items table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+
+.eds-warranty-items thead {
+    display: table-header-group;
+}
+
+.eds-warranty-items tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
+.eds-warranty-items th,
+.eds-warranty-items td {
+    padding: 2.5mm 2.2mm;
+    border: .3mm solid #555;
+    vertical-align: top;
+    text-align: left;
+}
+
+.eds-warranty-items th {
+    background: #f3f4f6;
+    font-weight: 700;
+}
+
+.eds-warranty-items th:first-child,
+.eds-warranty-items td:first-child {
+    text-align: center;
+}
+
+.eds-warranty-col-number { width: 7%; }
+.eds-warranty-col-name { width: 50%; }
+.eds-warranty-col-serial { width: 24%; }
+.eds-warranty-col-period { width: 19%; }
+
+.eds-warranty-terms {
+    margin-bottom: 10mm;
+    break-inside: auto;
+    page-break-inside: auto;
+}
+
+.eds-warranty-terms__title {
+    break-after: avoid;
+    page-break-after: avoid;
+}
+
+.eds-warranty-terms__content {
+    overflow-wrap: break-word;
+    word-break: normal;
+    hyphens: none;
+}
+
+.eds-warranty-terms__content p,
+.eds-warranty-terms__content ul,
+.eds-warranty-terms__content ol,
+.eds-warranty-terms__content li {
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.eds-warranty-terms__content p {
+    margin-bottom: 2.5mm;
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
+.eds-warranty-terms__content p:last-child {
+    margin-bottom: 0;
+}
+
+.eds-warranty-terms__content ul,
+.eds-warranty-terms__content ol {
+    margin-bottom: 2.5mm;
+    padding-left: 7mm;
+}
+
+.eds-warranty-terms__content ul { list-style: disc; }
+.eds-warranty-terms__content ol { list-style: decimal; }
+
+.eds-warranty-terms__content li {
+    margin-bottom: 1mm;
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
+.eds-warranty-terms__content .eds-warranty-list-item--continued {
+    list-style: none;
+}
+
+.eds-warranty-terms__content .eds-warranty-forced-break,
+.eds-warranty-terms__content .eds-warranty-oversized-block,
+.eds-warranty-terms__content .eds-warranty-list-item--continued {
+    break-inside: auto;
+    page-break-inside: auto;
+}
+
+.eds-warranty-table-row--oversized {
+    break-inside: auto;
+    page-break-inside: auto;
+}
+
+.eds-warranty-signatures {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16mm;
+    margin-top: 12mm;
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
+.eds-warranty-signature {
+    min-width: 0;
+}
+
+.eds-warranty-signature > p:first-child {
+    margin-bottom: 12mm;
+    font-weight: 700;
+}
+
+.eds-warranty-signature__line {
+    margin-bottom: 0;
+    padding-top: 2mm;
+    border-top: .3mm solid #333;
+    text-align: center;
+}
+
+@page {
+    size: A4 portrait;
+    margin: 13mm;
+}
+
+@media print {
+    html,
+    body.eds-warranty-print {
+        margin: 0;
+        padding: 0;
+        background: #fff;
+    }
+
+    .eds-warranty-document-stage {
+        padding: 0;
+        background: #fff;
+    }
+
+    .eds-warranty-pages {
+        display: block;
+    }
+
+    .eds-warranty-page-shell {
+        width: 184mm;
+        height: 271mm;
+        break-after: page;
+        page-break-after: always;
+    }
+
+    .eds-warranty-page-shell:last-child {
+        break-after: auto;
+        page-break-after: auto;
+    }
+
+    .eds-warranty-page {
+        width: 184mm;
+        height: 271mm;
+        padding: 0;
+        overflow: hidden;
+        box-shadow: none;
+        transform: none;
+    }
+
+    .eds-warranty-document-source {
+        width: auto;
+        min-height: 0;
+        margin: 0;
+        padding: 0;
+        box-shadow: none;
+    }
+
+    .eds-warranty-header,
+    .eds-warranty-parties,
+    .eds-warranty-signatures {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .eds-warranty-header__service {
+        text-align: right;
+    }
+}
+
+@media screen and (max-width: 700px) {
+    .eds-warranty-document-stage {
+        padding: 4mm;
+    }
+
+    .eds-warranty-document-source {
+        width: 100%;
+        min-height: 0;
+        padding: 7mm 5mm;
+        box-shadow: none;
+    }
+
+    .eds-warranty-document-source .eds-warranty-header,
+    .eds-warranty-document-source .eds-warranty-parties,
+    .eds-warranty-document-source .eds-warranty-signatures {
+        grid-template-columns: 1fr;
+        gap: 5mm;
+    }
+
+    .eds-warranty-document-source .eds-warranty-header__service {
+        text-align: left;
+    }
+
+    .eds-warranty-signature > p:first-child {
+        margin-bottom: 9mm;
+    }
+}

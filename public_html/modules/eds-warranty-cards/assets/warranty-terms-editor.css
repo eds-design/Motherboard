@@ -1,0 +1,70 @@
+#eds_warranty_cards_terms_html[hidden],
+#eds-warranty-cards-quill[hidden] {
+    display: none !important;
+}
+
+.eds-warranty-quill {
+    width: 100%;
+    margin-top: 0.75rem;
+}
+
+.eds-warranty-quill .ql-toolbar.ql-snow {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 7px 10px;
+    border: 2px solid #d1d5db;
+    border-bottom-width: 1px;
+    border-radius: 0.375rem 0.375rem 0 0;
+    background: #f9fafb;
+}
+
+.eds-warranty-quill .ql-toolbar.ql-snow .ql-formats {
+    display: inline-flex;
+    gap: 4px;
+    margin-right: 0;
+}
+
+.eds-warranty-quill .ql-toolbar.ql-snow button {
+    width: 32px;
+    height: 30px;
+    padding: 4px;
+    border-radius: 0.25rem;
+}
+
+.eds-warranty-quill .ql-toolbar.ql-snow button:hover,
+.eds-warranty-quill .ql-toolbar.ql-snow button:focus-visible {
+    background: #e5e7eb;
+}
+
+.eds-warranty-quill .ql-container.ql-snow {
+    min-height: 300px;
+    border: 2px solid #d1d5db;
+    border-top: 0;
+    border-radius: 0 0 0.375rem 0.375rem;
+    background: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 1rem;
+}
+
+.eds-warranty-quill .ql-editor {
+    min-height: 300px;
+    padding: 1rem;
+    line-height: 1.55;
+    overflow-wrap: anywhere;
+}
+
+.eds-warranty-quill .ql-editor:focus {
+    box-shadow: inset 0 0 0 2px #3b82f6;
+}
+
+@media (max-width: 640px) {
+    .eds-warranty-quill .ql-container.ql-snow,
+    .eds-warranty-quill .ql-editor {
+        min-height: 280px;
+    }
+
+    .eds-warranty-quill .ql-editor {
+        padding: 0.75rem;
+    }
+}
