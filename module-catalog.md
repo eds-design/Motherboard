@@ -6,7 +6,7 @@ To install a module, copy its folder into `public_html/modules/<slug>/`, then en
 
 ## Add your module
 
-Open a pull request that adds an entry to the list below. Keep entries in alphabetical order by name and use this format:
+Open a pull request that adds an entry under **Community Modules** below. Keep entries in alphabetical order by name and use this format:
 
 ```markdown
 ### Module Name
@@ -18,7 +18,9 @@ Open a pull request that adds an entry to the list below. Keep entries in alphab
 
 The repository should contain the module folder (with its `index.php`) and say which Motherboard version it needs. Listing a module here is not an endorsement or a security review — review a module's code before you install it.
 
-## Modules
+## Official Modules
+
+These modules are made by the Motherboard project and ship with the core in `public_html/modules/`.
 
 ### Cloudflare Turnstile
 
@@ -61,3 +63,7 @@ The repository should contain the module folder (with its `index.php`) and say w
 - **Author:** Michael Staake
 - **Description:** Flag work orders as warranty repairs, reference the prior work order, and mark it on the printout.
 - **Repository:** https://github.com/michaelstaake/Motherboard/tree/main/public_html/modules/warranty
+
+## Community Modules
+
+Modules made by other people. None are listed yet — yours could be the first.
