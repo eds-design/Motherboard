@@ -1,6 +1,6 @@
 # Motherboard module development
 
-Motherboard loads every subdirectory of `public_html/modules/` that contains an `index.php`. No sample modules ship with the core; this file is the contract for building them.
+Motherboard loads every subdirectory of `public_html/modules/` that contains an `index.php`. Several modules ship with the core (see [module-catalog.md](../module-catalog.md)) and are useful as working examples; this file is the contract for building them.
 
 Version constraints are compared with PHP `version_compare()`, against the `$version` value in `public_html/version.php`.
 

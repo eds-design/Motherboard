@@ -108,6 +108,10 @@ backups, firewall rules, HTTPS and reverse proxies, and troubleshooting.
 
 Drop each module in `public_html/modules/<slug>/` with an `index.php`. See `documentation/module-development.md`.
 
+### Module catalog
+
+[module-catalog.md](module-catalog.md) lists available modules, with each one's author, description, and repository. Built a module? Add it to the catalog with a pull request — the catalog explains the entry format.
+
 ## Frontend CSS
 
 Tailwind is compiled into `public_html/assets/app.css` and served locally; production pages do not run the Tailwind CDN script.
