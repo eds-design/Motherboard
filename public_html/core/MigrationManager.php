@@ -2,6 +2,7 @@
 
 class MigrationManager {
     private const LOCK_NAME = 'motherboard_schema_migration';
+    private const MIN_DISPLAY_MS = 3000;
 
     public static function handleIfNeeded(Database $database): void {
         $needsMigration = Hooks::applyFilters(
@@ -19,59 +20,71 @@ class MigrationManager {
 
         $lockAcquired = $database->acquireLock(self::LOCK_NAME, 0);
         if (!$lockAcquired) {
-            self::beginPage(t('maintenance.in_progress_title'), t('maintenance.in_progress_help'));
-            self::endPage(t('maintenance.try_again'), true);
+            // Another request is migrating; keep showing the spinner and let the meta refresh retry.
+            self::beginPage();
+            self::endPage(null);
         }
 
         ignore_user_abort(true);
         @set_time_limit(0);
-        self::beginPage(t('maintenance.updating_title'), t('maintenance.updating_help'));
+        self::beginPage();
 
         try {
             Schema::ensure($database);
             Hooks::doAction('schema.migrate', $database);
             Schema::markCurrent($database);
             $database->releaseLock(self::LOCK_NAME);
-            self::endPage(t('maintenance.complete'), false);
+            self::endPage(null, true);
         } catch (Throwable $e) {
             error_log('Database migration failed: ' . $e->getMessage());
             $database->releaseLock(self::LOCK_NAME);
-            self::endPage(t('maintenance.failed'), true);
+            self::endPage(t('maintenance.failed'));
         }
     }
 
-    private static function beginPage(string $title, string $message): void {
+    private static function beginPage(): void {
         http_response_code(503);
         header('Retry-After: 5');
         header('Cache-Control: no-store, no-cache, must-revalidate');
         header('X-Accel-Buffering: no');
 
-        $safeTitle = htmlspecialchars($title, ENT_QUOTES, 'UTF-8');
-        $safeMessage = htmlspecialchars($message, ENT_QUOTES, 'UTF-8');
-        $stylesheet = htmlspecialchars(BASE_URL . '/assets/app.css', ENT_QUOTES, 'UTF-8');
+        $safeTitle = htmlspecialchars(t('maintenance.updating_title'), ENT_QUOTES, 'UTF-8');
+        $safeMessage = htmlspecialchars(t('maintenance.please_wait'), ENT_QUOTES, 'UTF-8');
 
         echo '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">';
         echo '<meta name="viewport" content="width=device-width, initial-scale=1.0">';
         echo '<meta http-equiv="refresh" content="5">';
         echo '<title>' . $safeTitle . '</title>';
-        echo '<link rel="stylesheet" href="' . $stylesheet . '"></head>';
-        echo '<body class="min-h-screen bg-gray-100 text-gray-900">';
-        echo '<main class="min-h-screen flex items-center justify-center px-4 py-12">';
-        echo '<div class="w-full max-w-2xl rounded-lg border border-blue-200 bg-blue-50 p-8">';
-        echo '<h1 class="text-2xl font-bold text-blue-950">' . $safeTitle . '</h1>';
-        echo '<p class="mt-4 text-blue-900">' . $safeMessage . '</p>';
-        echo '<p id="migration-status" class="mt-3 text-sm text-blue-800">';
-        echo htmlspecialchars(t('maintenance.keep_open'), ENT_QUOTES, 'UTF-8') . '</p>';
+        echo '<script>window.migrationStartedAt=Date.now();</script>';
+        echo '<style>';
+        echo 'body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;';
+        echo 'background:#f3f4f6;color:#1f2937;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;}';
+        echo '.migration{display:flex;flex-direction:column;align-items:center;gap:1.5rem;padding:1rem;text-align:center;}';
+        echo '.migration-spinner{width:3rem;height:3rem;border:4px solid #bfdbfe;border-top-color:#2563eb;';
+        echo 'border-radius:50%;animation:migration-spin .8s linear infinite;}';
+        echo '@keyframes migration-spin{to{transform:rotate(360deg);}}';
+        echo '.migration-message{margin:0;font-size:1.125rem;}';
+        echo '.migration-failed .migration-spinner{display:none;}';
+        echo '.migration-failed .migration-message{color:#b91c1c;max-width:36rem;}';
+        echo '</style></head><body>';
+        echo '<main id="migration" class="migration">';
+        echo '<div class="migration-spinner" role="status" aria-label="' . $safeMessage . '"></div>';
+        echo '<p id="migration-message" class="migration-message">' . $safeMessage . '</p>';
         @ob_flush();
         flush();
     }
 
-    private static function endPage(string $status, bool $retry): never {
-        $safeStatus = json_encode($status, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
-        echo '</div></main>';
-        echo '<script>document.getElementById("migration-status").textContent=' . $safeStatus . ';';
-        if (!$retry) {
-            echo 'setTimeout(function(){window.location.reload();},1000);';
+    private static function endPage(?string $failure, bool $reload = false): never {
+        echo '</main><script>';
+        if ($failure !== null) {
+            $safeFailure = json_encode($failure, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
+            echo 'document.getElementById("migration").classList.add("migration-failed");';
+            echo 'document.getElementById("migration-message").textContent=' . $safeFailure . ';';
+        }
+        if ($reload) {
+            // Keep the screen up for a minimum time so it can be read even when the update is instant.
+            echo 'setTimeout(function(){window.location.reload();},';
+            echo 'Math.max(0,' . self::MIN_DISPLAY_MS . '-(Date.now()-window.migrationStartedAt)));';
         }
         echo '</script></body></html>';
         exit;
