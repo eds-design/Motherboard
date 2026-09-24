@@ -28,19 +28,40 @@ function motherboard_customer_email_ensure_schema(Database $database): void {
 }
 
 /**
- * Moves stored settings forward. Before version 2 the greeting was added outside the shop's
- * message, so a customized message gets the greeting put in front of it to keep sending the
- * same email now that the greeting is part of the editable text.
+ * Moves stored settings forward from the version this install was on. Version 0 means the
+ * module never ran here, so there is nothing to move.
+ *
+ * Before version 2 the greeting was added outside the shop's message, so a customized message
+ * gets the greeting put in front of it to keep sending the same email now that the greeting is
+ * part of the editable text.
+ *
+ * Before version 3 the subject line and footer were fixed, so an event whose message was
+ * customized gets the wording it was sending saved as its own subject and footer, keeping them
+ * with the rest of that shop's email.
  */
 function motherboard_customer_email_migrate_settings(Settings $settings): void {
-    if ((int) $settings->getSetting('schema_version_customer_email', '0') !== 1) {
+    $from = (int) $settings->getSetting('schema_version_customer_email', '0');
+    if ($from === 0) {
         return;
     }
     foreach (array_keys(MOTHERBOARD_CUSTOMER_EMAIL_EVENTS) as $event) {
         $key = motherboard_customer_email_template_key($event);
         $custom = trim((string) $settings->getSetting($key, ''));
-        if ($custom !== '') {
+        if ($custom === '') {
+            continue;
+        }
+        if ($from < 2) {
             $settings->setSetting($key, motherboard_customer_email_clean_template(t('customer_email.greeting') . "\n\n" . $custom));
+        }
+        if ($from < 3) {
+            $subjectKey = motherboard_customer_email_subject_key($event);
+            if (trim((string) $settings->getSetting($subjectKey, '')) === '') {
+                $settings->setSetting($subjectKey, motherboard_customer_email_clean_subject(motherboard_customer_email_default_subject($event)));
+            }
+            $footerKey = motherboard_customer_email_footer_key($event);
+            if (trim((string) $settings->getSetting($footerKey, '')) === '') {
+                $settings->setSetting($footerKey, motherboard_customer_email_clean_template(motherboard_customer_email_default_footer($event)));
+            }
         }
     }
 }

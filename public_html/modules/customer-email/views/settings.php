@@ -64,11 +64,21 @@ ob_start();
                 $headingKey = motherboard_customer_email_heading_key($event);
                 $defaultHeading = motherboard_customer_email_default_heading($event);
                 $heading = trim((string) ($settings[$headingKey] ?? '')) ?: $defaultHeading;
+                $subjectKey = motherboard_customer_email_subject_key($event);
+                $defaultSubject = motherboard_customer_email_default_subject($event);
+                $subject = trim((string) ($settings[$subjectKey] ?? '')) ?: $defaultSubject;
+                $footerKey = motherboard_customer_email_footer_key($event);
+                $defaultFooter = motherboard_customer_email_default_footer($event);
+                $footer = trim((string) ($settings[$footerKey] ?? '')) ?: $defaultFooter;
                 ?>
                 <div id="template-modal-<?= $event ?>" data-template-modal class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden" style="z-index: 1000;">
                     <div class="relative top-20 mx-auto mb-20 p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white">
                         <h3 class="text-lg font-medium text-gray-900"><?= t('customer_email.edit_title', ['type' => t('customer_email.' . $event . '.name')]) ?></h3>
                         <p class="mt-1 text-sm text-gray-500"><?= t('customer_email.edit_help') ?></p>
+                        <div class="mt-4">
+                            <label for="<?= $subjectKey ?>" class="block text-sm font-medium text-gray-700"><?= t('customer_email.subject_label') ?></label>
+                            <input type="text" id="<?= $subjectKey ?>" name="<?= $subjectKey ?>" maxlength="<?= MOTHERBOARD_CUSTOMER_EMAIL_SUBJECT_MAX ?>" value="<?= htmlspecialchars($subject, ENT_QUOTES, 'UTF-8') ?>" data-template-default="<?= htmlspecialchars($defaultSubject, ENT_QUOTES, 'UTF-8') ?>" class="mt-1 block w-full px-4 py-2 border-2 border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm bg-white">
+                        </div>
                         <div class="mt-4">
                             <label for="<?= $headingKey ?>" class="block text-sm font-medium text-gray-700"><?= t('customer_email.heading_label') ?></label>
                             <input type="text" id="<?= $headingKey ?>" name="<?= $headingKey ?>" maxlength="<?= MOTHERBOARD_CUSTOMER_EMAIL_HEADING_MAX ?>" value="<?= htmlspecialchars($heading, ENT_QUOTES, 'UTF-8') ?>" data-template-default="<?= htmlspecialchars($defaultHeading, ENT_QUOTES, 'UTF-8') ?>" class="mt-1 block w-full px-4 py-2 border-2 border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm bg-white">
@@ -76,6 +86,10 @@ ob_start();
                         <div class="mt-4">
                             <label for="<?= $templateKey ?>" class="block text-sm font-medium text-gray-700"><?= t('customer_email.template_label') ?></label>
                             <textarea id="<?= $templateKey ?>" name="<?= $templateKey ?>" rows="8" maxlength="<?= MOTHERBOARD_CUSTOMER_EMAIL_TEMPLATE_MAX ?>" data-template-default="<?= htmlspecialchars($defaultTemplate, ENT_QUOTES, 'UTF-8') ?>" class="mt-1 block w-full px-4 py-3 border-2 border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm bg-white"><?= htmlspecialchars($template, ENT_QUOTES, 'UTF-8') ?></textarea>
+                        </div>
+                        <div class="mt-4">
+                            <label for="<?= $footerKey ?>" class="block text-sm font-medium text-gray-700"><?= t('customer_email.footer_label') ?></label>
+                            <textarea id="<?= $footerKey ?>" name="<?= $footerKey ?>" rows="4" maxlength="<?= MOTHERBOARD_CUSTOMER_EMAIL_TEMPLATE_MAX ?>" data-template-default="<?= htmlspecialchars($defaultFooter, ENT_QUOTES, 'UTF-8') ?>" class="mt-1 block w-full px-4 py-3 border-2 border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm bg-white"><?= htmlspecialchars($footer, ENT_QUOTES, 'UTF-8') ?></textarea>
                             <p class="mt-1 text-xs text-gray-500"><?= t('customer_email.template_placeholders') ?></p>
                         </div>
                         <div class="mt-4 flex items-center justify-between gap-3">

@@ -5,7 +5,7 @@ require_once ROOT_PATH . '/models/Settings.php';
 require_once ROOT_PATH . '/models/WorkOrder.php';
 
 motherboard_customer_email_load_models();
-const MOTHERBOARD_CUSTOMER_EMAIL_SCHEMA_VERSION = 2;
+const MOTHERBOARD_CUSTOMER_EMAIL_SCHEMA_VERSION = 3;
 
 $customerEmailPath = $definition['path'];
 $customerEmailController = $definition['path'] . '/controllers/CustomerEmailController.php';
@@ -61,26 +61,24 @@ Hooks::addFilter('module.settings.save.customer-email', function (array $result,
     foreach (MOTHERBOARD_CUSTOMER_EMAIL_EVENTS as $event => $key) {
         $settings->setSetting($key, isset($post[$key]) ? '1' : '0');
 
-        $templateKey = motherboard_customer_email_template_key($event);
-        if (!array_key_exists($templateKey, $post)) {
-            continue;
-        }
-
-        // Wording that still matches the shipped message is stored as empty, so an untouched
-        // email keeps following the language the shop is reading it in.
-        $template = motherboard_customer_email_clean_template((string) $post[$templateKey]);
-        if ($template === motherboard_customer_email_clean_template(motherboard_customer_email_default_template($event))) {
-            $template = '';
-        }
-        $settings->setSetting($templateKey, $template);
-
-        $headingKey = motherboard_customer_email_heading_key($event);
-        if (array_key_exists($headingKey, $post)) {
-            $heading = motherboard_customer_email_clean_heading((string) $post[$headingKey]);
-            if ($heading === motherboard_customer_email_clean_heading(motherboard_customer_email_default_heading($event))) {
-                $heading = '';
+        // Each editable part: its setting, how a submission is cleaned, and the shipped wording.
+        $parts = [
+            [motherboard_customer_email_subject_key($event), 'motherboard_customer_email_clean_subject', motherboard_customer_email_default_subject($event)],
+            [motherboard_customer_email_heading_key($event), 'motherboard_customer_email_clean_heading', motherboard_customer_email_default_heading($event)],
+            [motherboard_customer_email_template_key($event), 'motherboard_customer_email_clean_template', motherboard_customer_email_default_template($event)],
+            [motherboard_customer_email_footer_key($event), 'motherboard_customer_email_clean_template', motherboard_customer_email_default_footer($event)],
+        ];
+        foreach ($parts as [$partKey, $clean, $default]) {
+            if (!array_key_exists($partKey, $post)) {
+                continue;
             }
-            $settings->setSetting($headingKey, $heading);
+            // Wording that still matches the shipped text is stored as empty, so an untouched
+            // part keeps following the language the shop is reading it in.
+            $value = $clean((string) $post[$partKey]);
+            if ($value === $clean($default)) {
+                $value = '';
+            }
+            $settings->setSetting($partKey, $value);
         }
     }
     return $result;

@@ -1,7 +1,8 @@
 <?php
 // Customer email shell. Table layout and inline styles only, since most mail clients
 // ignore <style> blocks and flexbox. Receives $email from motherboard_customer_email_render(),
-// whose 'body' is the shop's message (greeting included) already split into paragraphs.
+// whose 'body' is the shop's message (greeting included) and 'footer' its closing (questions line
+// and sign-off), each already split into paragraphs.
 $e = static fn($value): string => htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
 ?>
 <!DOCTYPE html>
@@ -38,8 +39,10 @@ $e = static fn($value): string => htmlspecialchars((string) $value, ENT_QUOTES, 
                             <?php endforeach; ?>
                         </table>
 
-                        <p style="margin:0 0 24px; font-size:15px; line-height:1.6; color:#374151;"><?= $e($email['questions']) ?></p>
-                        <p style="margin:0; font-size:15px; line-height:1.6; color:#374151;"><?= $e($email['sign_off']) ?><br><strong style="color:#111827;"><?= $e($email['company']) ?></strong></p>
+                        <?php $lastFooter = count($email['footer']) - 1; ?>
+                        <?php foreach ($email['footer'] as $i => $paragraph): ?>
+                        <p style="margin:0<?= $i === $lastFooter ? '' : ' 0 24px' ?>; font-size:15px; line-height:1.6; color:#374151;"><?= nl2br($e($paragraph)) ?></p>
+                        <?php endforeach; ?>
                     </td>
                 </tr>
                 <?php if ($email['address'] !== '' || $email['contact']): ?>
@@ -53,7 +56,7 @@ $e = static fn($value): string => htmlspecialchars((string) $value, ENT_QUOTES, 
                 </tr>
                 <?php endif; ?>
             </table>
-            <p style="max-width:600px; margin:16px auto 0; font-size:12px; line-height:1.5; color:#9ca3af; text-align:center;"><?= $e($email['footer']) ?></p>
+            <p style="max-width:600px; margin:16px auto 0; font-size:12px; line-height:1.5; color:#9ca3af; text-align:center;"><?= $e($email['notice']) ?></p>
         </td>
     </tr>
 </table>

@@ -19,6 +19,9 @@ const MOTHERBOARD_CUSTOMER_EMAIL_TEMPLATE_MAX = 4000;
 /** Longest heading a shop can save for one event. */
 const MOTHERBOARD_CUSTOMER_EMAIL_HEADING_MAX = 200;
 
+/** Longest subject line a shop can save for one event. */
+const MOTHERBOARD_CUSTOMER_EMAIL_SUBJECT_MAX = 200;
+
 function motherboard_customer_email_path(): string {
     return MODULES_PATH . '/customer-email';
 }
@@ -87,6 +90,55 @@ function motherboard_customer_email_clean_heading(string $heading): string {
     return mb_substr($heading, 0, MOTHERBOARD_CUSTOMER_EMAIL_HEADING_MAX);
 }
 
+/** Setting that holds the shop's own subject line for one event; empty means the shipped one. */
+function motherboard_customer_email_subject_key(string $event): string {
+    return 'customer_email_subject_' . $event;
+}
+
+/** The subject line shipped with the active language, placeholders still in place. */
+function motherboard_customer_email_default_subject(string $event): string {
+    return t('customer_email.' . $event . '.subject');
+}
+
+/** The subject line an event sends: the shop's own wording, or the shipped one. */
+function motherboard_customer_email_subject(string $event, ?Settings $settings = null): string {
+    if (!motherboard_customer_email_is_event($event)) {
+        return '';
+    }
+    $settings = $settings ?: new Settings();
+    $custom = trim((string) $settings->getSetting(motherboard_customer_email_subject_key($event), ''));
+    return $custom !== '' ? $custom : motherboard_customer_email_default_subject($event);
+}
+
+/** Puts a submitted subject line on one line, in the shape that gets stored and compared. */
+function motherboard_customer_email_clean_subject(string $subject): string {
+    $subject = trim((string) preg_replace('/\s+/u', ' ', $subject));
+    return mb_substr($subject, 0, MOTHERBOARD_CUSTOMER_EMAIL_SUBJECT_MAX);
+}
+
+/** Setting that holds the shop's own footer for one event; empty means the shipped one. */
+function motherboard_customer_email_footer_key(string $event): string {
+    return 'customer_email_footer_' . $event;
+}
+
+/**
+ * The footer shipped with the active language, placeholders still in place: the line about
+ * questions, then the sign-off with the company name under it.
+ */
+function motherboard_customer_email_default_footer(string $event): string {
+    return t('customer_email.questions') . "\n\n" . t('customer_email.sign_off') . "\n{company}";
+}
+
+/** The footer an event sends: the shop's own wording, or the shipped one. */
+function motherboard_customer_email_footer(string $event, ?Settings $settings = null): string {
+    if (!motherboard_customer_email_is_event($event)) {
+        return '';
+    }
+    $settings = $settings ?: new Settings();
+    $custom = trim((string) $settings->getSetting(motherboard_customer_email_footer_key($event), ''));
+    return $custom !== '' ? $custom : motherboard_customer_email_default_footer($event);
+}
+
 /** Swaps each {placeholder} in the text for its value. */
 function motherboard_customer_email_fill(string $text, array $vars): string {
     foreach ($vars as $key => $value) {
@@ -153,6 +205,7 @@ function motherboard_customer_email_render(string $event, array $data, ?Settings
         'company' => $companyName,
         'number' => (string) ($data['number'] ?? ''),
         'name' => (string) ($data['name'] ?? ''),
+        'app_name' => APP_NAME,
     ];
 
     $status = (string) ($data['status'] ?? '');
@@ -181,9 +234,8 @@ function motherboard_customer_email_render(string $event, array $data, ?Settings
         'heading' => motherboard_customer_email_fill(motherboard_customer_email_heading($event, $settings), $vars),
         'body' => motherboard_customer_email_paragraphs(motherboard_customer_email_template($event, $settings), $vars),
         'details' => $details,
-        'questions' => t('customer_email.questions', $vars),
-        'sign_off' => t('customer_email.sign_off'),
-        'footer' => t('customer_email.footer', $vars),
+        'footer' => motherboard_customer_email_paragraphs(motherboard_customer_email_footer($event, $settings), $vars),
+        'notice' => t('customer_email.footer', $vars),
         'lang' => substr(I18n::getInstance()->getLocale(), 0, 2),
     ];
 
@@ -199,11 +251,10 @@ function motherboard_customer_email_render(string $event, array $data, ?Settings
     foreach ($details as [$label, $value]) {
         $text[] = $label . ': ' . $value;
     }
-    $text[] = '';
-    $text[] = $email['questions'];
-    $text[] = '';
-    $text[] = $email['sign_off'];
-    $text[] = $companyName;
+    foreach ($email['footer'] as $paragraph) {
+        $text[] = '';
+        $text[] = $paragraph;
+    }
     if ($email['address'] !== '') {
         $text[] = $email['address'];
     }
@@ -211,10 +262,10 @@ function motherboard_customer_email_render(string $event, array $data, ?Settings
         $text[] = $line;
     }
     $text[] = '';
-    $text[] = $email['footer'];
+    $text[] = $email['notice'];
 
     return [
-        'subject' => t('customer_email.' . $event . '.subject', $vars),
+        'subject' => motherboard_customer_email_fill(motherboard_customer_email_subject($event, $settings), $vars),
         'html' => $html,
         'text' => implode("\n", $text),
     ];
