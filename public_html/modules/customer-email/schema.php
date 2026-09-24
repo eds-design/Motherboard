@@ -27,6 +27,24 @@ function motherboard_customer_email_ensure_schema(Database $database): void {
     }
 }
 
+/**
+ * Moves stored settings forward. Before version 2 the greeting was added outside the shop's
+ * message, so a customized message gets the greeting put in front of it to keep sending the
+ * same email now that the greeting is part of the editable text.
+ */
+function motherboard_customer_email_migrate_settings(Settings $settings): void {
+    if ((int) $settings->getSetting('schema_version_customer_email', '0') !== 1) {
+        return;
+    }
+    foreach (array_keys(MOTHERBOARD_CUSTOMER_EMAIL_EVENTS) as $event) {
+        $key = motherboard_customer_email_template_key($event);
+        $custom = trim((string) $settings->getSetting($key, ''));
+        if ($custom !== '') {
+            $settings->setSetting($key, motherboard_customer_email_clean_template(t('customer_email.greeting') . "\n\n" . $custom));
+        }
+    }
+}
+
 function motherboard_customer_email_table_exists(PDO $pdo, string $table): bool {
     $stmt = $pdo->query('SHOW TABLES LIKE ' . $pdo->quote($table));
     return $stmt && $stmt->rowCount() > 0;

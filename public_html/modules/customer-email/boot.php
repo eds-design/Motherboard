@@ -5,7 +5,7 @@ require_once ROOT_PATH . '/models/Settings.php';
 require_once ROOT_PATH . '/models/WorkOrder.php';
 
 motherboard_customer_email_load_models();
-const MOTHERBOARD_CUSTOMER_EMAIL_SCHEMA_VERSION = 1;
+const MOTHERBOARD_CUSTOMER_EMAIL_SCHEMA_VERSION = 2;
 
 $customerEmailPath = $definition['path'];
 $customerEmailController = $definition['path'] . '/controllers/CustomerEmailController.php';
@@ -24,6 +24,7 @@ Hooks::addAction('schema.migrate', function (Database $database): void {
         return;
     }
     motherboard_customer_email_ensure_schema($database);
+    motherboard_customer_email_migrate_settings($settings);
     $settings->setSetting('schema_version_customer_email', (string) MOTHERBOARD_CUSTOMER_EMAIL_SCHEMA_VERSION);
 });
 
@@ -72,6 +73,15 @@ Hooks::addFilter('module.settings.save.customer-email', function (array $result,
             $template = '';
         }
         $settings->setSetting($templateKey, $template);
+
+        $headingKey = motherboard_customer_email_heading_key($event);
+        if (array_key_exists($headingKey, $post)) {
+            $heading = motherboard_customer_email_clean_heading((string) $post[$headingKey]);
+            if ($heading === motherboard_customer_email_clean_heading(motherboard_customer_email_default_heading($event))) {
+                $heading = '';
+            }
+            $settings->setSetting($headingKey, $heading);
+        }
     }
     return $result;
 });

@@ -16,6 +16,9 @@ const MOTHERBOARD_CUSTOMER_EMAIL_UPDATE_STATUSES = ['In Progress', 'Awaiting Par
 /** Longest message a shop can save for one event. */
 const MOTHERBOARD_CUSTOMER_EMAIL_TEMPLATE_MAX = 4000;
 
+/** Longest heading a shop can save for one event. */
+const MOTHERBOARD_CUSTOMER_EMAIL_HEADING_MAX = 200;
+
 function motherboard_customer_email_path(): string {
     return MODULES_PATH . '/customer-email';
 }
@@ -43,9 +46,9 @@ function motherboard_customer_email_template_key(string $event): string {
     return 'customer_email_template_' . $event;
 }
 
-/** The message shipped with the active language, placeholders still in place. */
+/** The message shipped with the active language, greeting included, placeholders still in place. */
 function motherboard_customer_email_default_template(string $event): string {
-    return t('customer_email.' . $event . '.body');
+    return t('customer_email.greeting') . "\n\n" . t('customer_email.' . $event . '.body');
 }
 
 /** The message an event sends: the shop's own wording, or the shipped one. */
@@ -56,6 +59,40 @@ function motherboard_customer_email_template(string $event, ?Settings $settings 
     $settings = $settings ?: new Settings();
     $custom = trim((string) $settings->getSetting(motherboard_customer_email_template_key($event), ''));
     return $custom !== '' ? $custom : motherboard_customer_email_default_template($event);
+}
+
+/** Setting that holds the shop's own heading for one event; empty means the shipped one. */
+function motherboard_customer_email_heading_key(string $event): string {
+    return 'customer_email_heading_' . $event;
+}
+
+/** The heading shipped with the active language, placeholders still in place. */
+function motherboard_customer_email_default_heading(string $event): string {
+    return t('customer_email.' . $event . '.heading');
+}
+
+/** The heading an event shows: the shop's own wording, or the shipped one. */
+function motherboard_customer_email_heading(string $event, ?Settings $settings = null): string {
+    if (!motherboard_customer_email_is_event($event)) {
+        return '';
+    }
+    $settings = $settings ?: new Settings();
+    $custom = trim((string) $settings->getSetting(motherboard_customer_email_heading_key($event), ''));
+    return $custom !== '' ? $custom : motherboard_customer_email_default_heading($event);
+}
+
+/** Puts a submitted heading on one line, in the shape that gets stored and compared. */
+function motherboard_customer_email_clean_heading(string $heading): string {
+    $heading = trim((string) preg_replace('/\s+/u', ' ', $heading));
+    return mb_substr($heading, 0, MOTHERBOARD_CUSTOMER_EMAIL_HEADING_MAX);
+}
+
+/** Swaps each {placeholder} in the text for its value. */
+function motherboard_customer_email_fill(string $text, array $vars): string {
+    foreach ($vars as $key => $value) {
+        $text = str_replace('{' . $key . '}', (string) $value, $text);
+    }
+    return $text;
 }
 
 /** Puts a submitted message into the one shape that gets stored and compared. */
@@ -71,9 +108,7 @@ function motherboard_customer_email_clean_template(string $template): string {
  * newlines stay inside their paragraph for the view to break.
  */
 function motherboard_customer_email_paragraphs(string $template, array $vars): array {
-    foreach ($vars as $key => $value) {
-        $template = str_replace('{' . $key . '}', (string) $value, $template);
-    }
+    $template = motherboard_customer_email_fill($template, $vars);
 
     $paragraphs = [];
     $clean = motherboard_customer_email_clean_template($template);
@@ -143,8 +178,7 @@ function motherboard_customer_email_render(string $event, array $data, ?Settings
         'company' => $companyName,
         'address' => trim((string) ($company['company_address'] ?? '')),
         'contact' => $contact,
-        'heading' => t('customer_email.' . $event . '.heading', $vars),
-        'greeting' => t('customer_email.greeting', $vars),
+        'heading' => motherboard_customer_email_fill(motherboard_customer_email_heading($event, $settings), $vars),
         'body' => motherboard_customer_email_paragraphs(motherboard_customer_email_template($event, $settings), $vars),
         'details' => $details,
         'questions' => t('customer_email.questions', $vars),
@@ -157,7 +191,7 @@ function motherboard_customer_email_render(string $event, array $data, ?Settings
     include motherboard_customer_email_path() . '/views/email.php';
     $html = (string) ob_get_clean();
 
-    $text = [$email['heading'], '', $email['greeting'], ''];
+    $text = [$email['heading'], ''];
     foreach ($email['body'] as $paragraph) {
         $text[] = $paragraph;
         $text[] = '';
