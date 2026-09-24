@@ -202,7 +202,7 @@ $searchQuery = $search ?? '';
             </div>
             <div class="mb-4">
                 <label for="product_item_number" class="block text-sm font-medium text-gray-700"><?= t('inventory.item_number') ?> *</label>
-                <input type="text" id="product_item_number" name="item_number" required maxlength="100" pattern="[a-z0-9]+(-[a-z0-9]+)*" class="mt-1 block w-full px-4 py-3 border-2 border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm bg-white">
+                <input type="text" id="product_item_number" name="item_number" required maxlength="100" pattern="[A-Z0-9]+(-[A-Z0-9]+)*" class="mt-1 block w-full px-4 py-3 border-2 border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm bg-white">
                 <p class="mt-1 text-xs text-gray-500">
                     <?= t('inventory.item_number_help') ?>
                     <button type="button" id="product_item_number_generate" class="font-medium text-primary-600 hover:text-primary-500"><?= t('inventory.item_number_generate') ?></button>
@@ -282,10 +282,10 @@ function closeProductModal() {
     const nameField = document.getElementById('product_name');
     function slugifyItemNumber(value) {
         return value
-            .toLowerCase()
+            .toUpperCase()
             .trim()
             .replace(/[\s_]+/g, '-')
-            .replace(/[^a-z0-9-]/g, '')
+            .replace(/[^A-Z0-9-]/g, '')
             .replace(/-+/g, '-')
             .replace(/^-+|-+$/g, '')
             .slice(0, 100)
@@ -293,9 +293,9 @@ function closeProductModal() {
     }
     field.addEventListener('input', function () {
         const slugged = this.value
-            .toLowerCase()
+            .toUpperCase()
             .replace(/[\s_]+/g, '-')
-            .replace(/[^a-z0-9-]/g, '');
+            .replace(/[^A-Z0-9-]/g, '');
         if (this.value !== slugged) {
             this.value = slugged;
         }

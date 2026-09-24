@@ -102,15 +102,15 @@ function motherboard_inventory_format_stock($stock): string {
 }
 
 function motherboard_inventory_slugify_item_number(string $value): string {
-    $value = strtolower(trim($value));
+    $value = strtoupper(trim($value));
     $value = preg_replace('/[\s_]+/', '-', $value) ?? '';
-    $value = preg_replace('/[^a-z0-9-]/', '', $value) ?? '';
+    $value = preg_replace('/[^A-Z0-9-]/', '', $value) ?? '';
     $value = preg_replace('/-+/', '-', $value) ?? '';
     return trim($value, '-');
 }
 
 function motherboard_inventory_custom_item_number(): string {
-    return 'custom';
+    return 'CUSTOM';
 }
 
 function motherboard_inventory_is_custom_item(?string $itemNumber): bool {

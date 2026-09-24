@@ -121,7 +121,7 @@ function motherboard_inventory_ensure_item_number_required(PDO $pdo): void {
     foreach ($rows as $row) {
         $slug = motherboard_inventory_slugify_item_number((string) ($row['item_number'] ?? ''));
         if ($slug === '') {
-            $slug = 'item-' . (int) $row['id'];
+            $slug = 'ITEM-' . (int) $row['id'];
         }
         $base = $slug;
         $suffix = 2;
@@ -141,6 +141,11 @@ function motherboard_inventory_ensure_item_number_required(PDO $pdo): void {
                 $updateLines->execute([$slug, $row['id']]);
             }
         }
+    }
+
+    // Lines whose product was deleted still carry the old item number.
+    if ($hasLines) {
+        $pdo->exec('UPDATE work_order_products SET item_number = UPPER(item_number) WHERE product_id IS NULL AND item_number IS NOT NULL');
     }
 
     if ($nullable) {
