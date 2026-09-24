@@ -21,7 +21,6 @@ define('FROM_EMAIL', getenv('FROM_EMAIL') ?: 'noreply@example.com');
 // Changing this key makes encrypted settings and device passwords unreadable.
 define('APP_ENCRYPTION_KEY', getenv('APP_ENCRYPTION_KEY') ?: 'replace-with-a-private-random-key-of-at-least-32-characters');
 
-define('SESSION_TIMEOUT', 3600);
 define('MAX_LOGIN_ATTEMPTS', 5);
 define('LOGIN_ATTEMPT_TIMEOUT', 900);
 define('PAGINATION_LIMIT', 10);

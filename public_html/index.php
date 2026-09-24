@@ -33,6 +33,10 @@ require_once 'config.php';
 
 ini_set('session.cache_limiter', '');
 ini_set('session.use_strict_mode', '1');
+// The idle timeout is enforced below from the Settings > Security value (5-1440 minutes).
+// Keep PHP's garbage collector from deleting session data before that, since its
+// default of 24 minutes would otherwise sign users out early.
+ini_set('session.gc_maxlifetime', (string) (1440 * 60));
 $sessionSecure = FORCE_HTTPS
     || (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
     || (isset($_SERVER['SERVER_PORT']) && (int) $_SERVER['SERVER_PORT'] === 443);
@@ -123,7 +127,7 @@ if ($installed) {
     MigrationManager::handleIfNeeded($database);
 
     if (isset($_SESSION['user_id'])) {
-        $timeoutMinutes = (int) $settingsModel->getSetting('session_timeout', max(5, (int) (SESSION_TIMEOUT / 60)));
+        $timeoutMinutes = (int) $settingsModel->getSetting('session_timeout', 60);
         $timeoutSeconds = max(5, min(1440, $timeoutMinutes)) * 60;
         $lastActivity = (int) ($_SESSION['last_activity'] ?? time());
 
